@@ -1,3 +1,13 @@
+! This is derived from the recurrence relations in chebfun
+!
+!> @module jacobi
+!! This module implements the Gauss-Jacobi quadrature method for numerical integration.
+!! It provides subroutines for computing the Jacobi polynomials, recurrence relations,
+!! and evaluation of the polynomials and their derivatives.
+!! The implementation is based on the recurrence method in chebfun (https://chebfun.org)
+!! and the paper:
+!! Hale and Townsend, Fast and accurate computation of Gauss–Legendre and
+!! Gauss–Jacobi quadrature nodes and weights, SIAM J. Sci. Comp. 2013
 module jacobi
 use types, only: dp
 use constants, only: pi
