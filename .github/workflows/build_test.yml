@@ -1,0 +1,51 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install packages
+        run: |
+          set -ex
+          echo "Update information of package list.."
+          sudo apt-get update
+          echo "Install Fortran compiler .."
+          sudo apt-get install -y gfortran
+          echo "Install OpenMP headers .."
+          sudo apt-get install -y libomp-dev
+          echo "Install lapack .."
+          sudo apt-get install -y libopenblas-dev liblapack-dev
+
+      - name: Install fpm
+        uses: fortran-lang/setup-fpm@v5
+        with:
+          fpm-version: 'v0.9.0'
+
+      - name: Build featom
+        run: |
+          set -ex
+          fpm build
+
+      - name: Test featom
+        run: |
+          set -ex
+          fpm test
+
+      - name: Test convergence
+        run: |
+          set -ex
+          fpm run gpd_coulomb_schroed_nelements
+
+      - name: Test Release Mode
+        run: |
+          set -ex
+          fpm test --profile=release
+          fpm run --profile=release gpd_coulomb_schroed_nelements

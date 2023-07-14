@@ -1,0 +1,68 @@
+name: Build documentation
+on: [push, pull_request]
+jobs:
+  build_docs:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v3
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: '1.3.1-0'
+          environment-file: environment.yml
+          init-shell: >-
+            bash
+          cache-environment: true
+          post-cleanup: 'all'
+      - name: Get external tags
+        shell: bash -el {0}
+        run: |
+          cd apidocs
+          mkdir -p tags
+          cd tags
+          curl https://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml -o cppreference-doxygen-web.tag.xml
+      - name: Get Theme
+        shell: bash -el {0}
+        run: |
+          cd apidocs
+          wget https://github.com/HaoZeke/doxyYoda/releases/download/0.0.2/doxyYoda_0.0.2.tar.gz
+          tar xf doxyYoda_0.0.2.tar.gz
+      - name: Generate Docs
+        shell: bash -el {0}
+        run: |
+          doxygen apidocs/Doxygen-featom.cfg
+      - name: Archive artifact
+        shell: sh
+        if: runner.os == 'Linux'
+        run: |
+          tar \
+          --dereference --hard-dereference \
+          --exclude=.git \
+          --exclude=.github \
+          -cvf "$RUNNER_TEMP/artifact.tar" \
+          --directory=html .
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          if-no-files-found: error
+  # Deploy job
+  deploy:
+    # Add a dependency to the build job
+    needs: build_docs
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action

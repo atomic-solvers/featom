@@ -1,0 +1,13 @@
+name = "featom"
+version = "0.1.0"
+license = "MIT"
+author = "Ondrej Certik, John E. Pask, Isuru Fernando, Rohit Goswami, N. Sukumar, Lee. A. Collins, Gianmarco Manzini, Jiri Vackar"
+maintainer = "ondrej@certik.us"
+copyright = "Copyright 2023, featom developers"
+[build]
+auto-executables = true
+auto-tests = true
+auto-examples = true
+link = ["blas", "lapack"]
+[install]
+library = false
