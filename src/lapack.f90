@@ -10,79 +10,79 @@
 !>
 !> The remaining documentation is taken from [LAPACK](http://www.netlib.org/lapack/explore-html/index.html) and can be augmented by the [quick reference guide](https://www.maths.tcd.ie/~domijank/lapack.pdf)
 module lapack
-implicit none
+   implicit none
 
-integer, parameter:: dp=kind(0.d0)
+   integer, parameter:: dp = kind(0.d0)
 
-interface
+   interface
 
-    SUBROUTINE DGESV( N, NRHS, A, LDA, IPIV, B, LDB, INFO )
-    import :: dp
-    INTEGER            INFO, LDA, LDB, N, NRHS
-    INTEGER            IPIV( * )
-    REAL(dp)           A( LDA, * ), B( LDB, * )
-    END SUBROUTINE
+      SUBROUTINE DGESV(N, NRHS, A, LDA, IPIV, B, LDB, INFO)
+         import :: dp
+         INTEGER INFO, LDA, LDB, N, NRHS
+         INTEGER IPIV(*)
+         REAL(dp) A(LDA, *), B(LDB, *)
+      END SUBROUTINE
 
-    SUBROUTINE DSYSV( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, WORK, LWORK, INFO )
-    import :: dp
-    CHARACTER          UPLO
-    INTEGER            INFO, LDA, LDB, LWORK, N, NRHS
-    INTEGER            IPIV( * )
-    REAL(dp)           A( LDA, * ), B( LDB, * ), WORK( * )
-    END SUBROUTINE
+      SUBROUTINE DSYSV(UPLO, N, NRHS, A, LDA, IPIV, B, LDB, WORK, LWORK, INFO)
+         import :: dp
+         CHARACTER UPLO
+         INTEGER INFO, LDA, LDB, LWORK, N, NRHS
+         INTEGER IPIV(*)
+         REAL(dp) A(LDA, *), B(LDB, *), WORK(*)
+      END SUBROUTINE
 
-    SUBROUTINE DSYTRS( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
-    import :: dp
-    CHARACTER          UPLO
-    INTEGER            INFO, LDA, LDB, N, NRHS
-    INTEGER            IPIV( * )
-    REAL(dp)           A( LDA, * ), B( LDB, * )
-    END SUBROUTINE
+      SUBROUTINE DSYTRS(UPLO, N, NRHS, A, LDA, IPIV, B, LDB, INFO)
+         import :: dp
+         CHARACTER UPLO
+         INTEGER INFO, LDA, LDB, N, NRHS
+         INTEGER IPIV(*)
+         REAL(dp) A(LDA, *), B(LDB, *)
+      END SUBROUTINE
 
-    SUBROUTINE DSYTRF( UPLO, N, A, LDA, IPIV, WORK, LWORK, INFO )
-    import :: dp
-    CHARACTER          UPLO
-    INTEGER            INFO, LDA, LWORK, N
-    INTEGER            IPIV( * )
-    REAL(dp)           A( LDA, * ), WORK( * )
-    END SUBROUTINE
+      SUBROUTINE DSYTRF(UPLO, N, A, LDA, IPIV, WORK, LWORK, INFO)
+         import :: dp
+         CHARACTER UPLO
+         INTEGER INFO, LDA, LWORK, N
+         INTEGER IPIV(*)
+         REAL(dp) A(LDA, *), WORK(*)
+      END SUBROUTINE
 
-    SUBROUTINE DSYEVD( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, IWORK, &
-                       LIWORK, INFO )
-    import :: dp
-    CHARACTER          JOBZ, UPLO
-    INTEGER            INFO, LDA, LIWORK, LWORK, N
-    INTEGER            IWORK( * )
-    REAL(dp)           A( LDA, * ), W( * ), WORK( * )
-    END SUBROUTINE
+      SUBROUTINE DSYEVD(JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, IWORK, &
+                        LIWORK, INFO)
+         import :: dp
+         CHARACTER JOBZ, UPLO
+         INTEGER INFO, LDA, LIWORK, LWORK, N
+         INTEGER IWORK(*)
+         REAL(dp) A(LDA, *), W(*), WORK(*)
+      END SUBROUTINE
 
-    SUBROUTINE DSYEVX( JOBZ, RANGE, UPLO, N, A, LDA, &
-                       VL, VU, IL, IU, ABSTOL, M, W, Z, LDZ, WORK, &
-                       LWORK, IWORK, IFAIL, INFO )
-    import :: dp
-    CHARACTER          JOBZ, RANGE, UPLO
-    INTEGER            IL, INFO, IU, LDA, LDZ, LWORK, M, N
-    REAL(dp)           ABSTOL, VL, VU
-    INTEGER            IFAIL( * ), IWORK( * )
-    REAL(dp)           A( LDA, * ), W( * ), WORK( * ), &
-                       Z( LDZ, * )
-    END SUBROUTINE
+      SUBROUTINE DSYEVX(JOBZ, RANGE, UPLO, N, A, LDA, &
+                        VL, VU, IL, IU, ABSTOL, M, W, Z, LDZ, WORK, &
+                        LWORK, IWORK, IFAIL, INFO)
+         import :: dp
+         CHARACTER JOBZ, RANGE, UPLO
+         INTEGER IL, INFO, IU, LDA, LDZ, LWORK, M, N
+         REAL(dp) ABSTOL, VL, VU
+         INTEGER IFAIL(*), IWORK(*)
+         REAL(dp) A(LDA, *), W(*), WORK(*), &
+            Z(LDZ, *)
+      END SUBROUTINE
 
-    SUBROUTINE DSYGVD( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK, &
-                       LWORK, IWORK, LIWORK, INFO )
-    import :: dp
-    CHARACTER          JOBZ, UPLO
-    INTEGER            INFO, ITYPE, LDA, LDB, LIWORK, LWORK, N
-    INTEGER            IWORK( * )
-    REAL(dp)           A( LDA, * ), B( LDB, * ), W( * ), WORK( * )
-    END SUBROUTINE
+      SUBROUTINE DSYGVD(ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK, &
+                        LWORK, IWORK, LIWORK, INFO)
+         import :: dp
+         CHARACTER JOBZ, UPLO
+         INTEGER INFO, ITYPE, LDA, LDB, LIWORK, LWORK, N
+         INTEGER IWORK(*)
+         REAL(dp) A(LDA, *), B(LDB, *), W(*), WORK(*)
+      END SUBROUTINE
 
-    REAL(dp) FUNCTION DLAMCH( CMACH )
-    import :: dp
-    CHARACTER          CMACH
-    END FUNCTION
+      REAL(dp) FUNCTION DLAMCH(CMACH)
+         import :: dp
+         CHARACTER CMACH
+      END FUNCTION
 
-end interface
+   end interface
 
 contains
 
