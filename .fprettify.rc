@@ -1,4 +1,3 @@
-# Kanged partially from https://github.com/PHOTOX/ABIN/blob/master/.fprettify.rc
 # Replace FORTRAN style relational operators with C-style
 # .e.g '.lt.' -> '<'
 enable-replacements=True
@@ -6,7 +5,7 @@ c-relations=True
 
 # White space settings
 indent=4
-line-length=199
+line-length=132
 strict-indent=True
 strip-comments=True
 whitespace-relational=True
@@ -24,3 +23,6 @@ enable-decl=True
 
 # Don't indent pre-processor statements
 disable-fypp=True
+
+# Modules don't need indentation
+disable-indent-mod=True
