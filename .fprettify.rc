@@ -1,0 +1,26 @@
+# Kanged partially from https://github.com/PHOTOX/ABIN/blob/master/.fprettify.rc
+# Replace FORTRAN style relational operators with C-style
+# .e.g '.lt.' -> '<'
+enable-replacements=True
+c-relations=True
+
+# White space settings
+indent=3
+line-length=199
+strict-indent=True
+strip-comments=True
+whitespace-relational=True
+whitespace-logical=True
+whitespace-plusminus=True
+whitespace-multdiv=True
+whitespace-comma=True
+whitespace-intrinsics=True
+whitespace-print=False
+whitespace-type=False
+
+# Control whitespace around '::' declarations
+whitespace-decl=True
+enable-decl=True
+
+# Don't indent pre-processor statements
+disable-fypp=True
