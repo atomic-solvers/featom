@@ -15,5 +15,5 @@ dependencies:
   - openblas
   - openmp
   # Documentation
-  - doxygen
-  - graphviz
+  - doxygen==1.9.1 # for doxyYoda
+  - graphviz # for dot
