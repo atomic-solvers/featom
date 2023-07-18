@@ -23,29 +23,29 @@ program conv_potential
 !
 ! <alpha> can be 0, 1, -1 (-1 implies beta). used only for Dirac.
 
-   use graphs_potential, only: run_convergence_potential
-   implicit none
+    use graphs_potential, only: run_convergence_potential
+    implicit none
 
-   integer :: dirac_int, study_type, p_or_Ne, potential_type, alpha_int
-   character(len=128) :: arg
+    integer :: dirac_int, study_type, p_or_Ne, potential_type, alpha_int
+    character(len=128) :: arg
 
-   if (command_argument_count() /= 5) then
-      print*,"./conv_potential <study_type> <equation> <Ne/p> <potential_type> <alpha>"
-      error stop "Must supply 5 arguments"
-   end if
+    if (command_argument_count() /= 5) then
+        print*,"./conv_potential <study_type> <equation> <Ne/p> <potential_type> <alpha>"
+        error stop "Must supply 5 arguments"
+    end if
 
-   call get_command_argument(1, arg)
-   read (arg, '(i4)') study_type
-   call get_command_argument(2, arg)
-   read (arg, '(i4)') dirac_int
-   call get_command_argument(3, arg)
-   read (arg, '(i4)') p_or_Ne
-   call get_command_argument(4, arg)
-   read (arg, '(i4)') potential_type
-   call get_command_argument(5, arg)
-   read (arg, '(i4)') alpha_int
+    call get_command_argument(1, arg)
+    read (arg, '(i4)') study_type
+    call get_command_argument(2, arg)
+    read (arg, '(i4)') dirac_int
+    call get_command_argument(3, arg)
+    read (arg, '(i4)') p_or_Ne
+    call get_command_argument(4, arg)
+    read (arg, '(i4)') potential_type
+    call get_command_argument(5, arg)
+    read (arg, '(i4)') alpha_int
 
-   call run_convergence_potential(study_type, dirac_int, p_or_Ne, &
-                                  potential_type, alpha_int, ".")
+    call run_convergence_potential(study_type, dirac_int, p_or_Ne, &
+                                   potential_type, alpha_int, ".")
 
 end program
