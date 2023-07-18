@@ -8,7 +8,7 @@ use feutils, only: define_connect, get_quad_pts, get_parent_quad_pts_wts, &
         get_parent_nodes, phih, dphih, phih_array, dphih_array, c2fullc2, &
         fe2quad, fe2quad_core
 use fe, only: assemble_radial_S, assemble_radial_H, assemble_radial_dirac_SH
-use jacobi, only: gauss_jacobi
+use GaussJacobiQuad, only: gauss_jacobi
 use linalg, only: eigh
 use string_utils, only: str
 implicit none
