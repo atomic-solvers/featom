@@ -25,21 +25,21 @@ contains
    subroutine solve_dirac(Z, p, xiq, wtq, xe, eps, energies, Etot, V, DOFs)
 
       integer, intent(in) :: Z, p
-      real(dp), intent(in) :: xe(:)        ! element coordinates
-      real(dp), intent(in) :: xiq(:)       ! quadrature points
-      real(dp), intent(in) :: wtq(:)       ! quadrature weights
+      real(dp), intent(in) :: xe(:) ! element coordinates
+      real(dp), intent(in) :: xiq(:) ! quadrature points
+      real(dp), intent(in) :: wtq(:) ! quadrature weights
       real(dp), intent(in) :: eps
       real(dp), allocatable, intent(out) :: energies(:)
       real(dp), intent(out) :: Etot
-      real(dp), intent(out) :: V(:, :)       ! SCF potential
+      real(dp), intent(out) :: V(:, :) ! SCF potential
       integer, intent(out) :: DOFs
 
       integer :: n, Nq
       real(dp), allocatable :: H(:, :), S(:, :), D(:, :), lam(:), lam_tmp(:)
-      real(dp), allocatable :: xiq_gj(:, :)      ! quadrature points first element
-      real(dp), allocatable :: wtq_gj(:, :)      ! quadrature weights first element
-      real(dp), allocatable :: xin(:)       ! parent basis nodes
-      integer, allocatable :: ib(:, :)       ! basis connectivity: ib(i,j) = index of
+      real(dp), allocatable :: xiq_gj(:, :) ! quadrature points first element
+      real(dp), allocatable :: wtq_gj(:, :) ! quadrature weights first element
+      real(dp), allocatable :: xin(:) ! parent basis nodes
+      integer, allocatable :: ib(:, :) ! basis connectivity: ib(i,j) = index of
       ! basis function associated with local basis function i of element j. 0 = no
       ! associated basis fn.
       integer, allocatable :: in(:, :)
@@ -84,14 +84,14 @@ contains
       do kappa = Lmin, Lmax
          if (kappa == 0) cycle
          ! asymptotic at r = 0
-         asympt = sqrt(kappa**2 - Z**2/c**2)
+         asympt = sqrt(kappa**2 - Z**2 / c**2)
          ! alpha can be [0, asympt]
          alpha(kappa) = asympt
          ! power of r for Gauss-Jacobi quadrature
-         alpha_j(kappa) = 2*alpha(kappa) - 2
+         alpha_j(kappa) = 2 * alpha(kappa) - 2
       end do
 
-      Nn = Ne*p + 1
+      Nn = Ne * p + 1
 
       allocate (xin(p + 1))
       call get_parent_nodes(2, p, xin)
@@ -124,7 +124,7 @@ contains
          call phih_array(xin, al, xiq, phihq(:, al))
       end do
 
-      n = Nb*2
+      n = Nb * 2
       DOFs = n
       allocate (H(n, n), S(n, n))
       allocate (D(n, n), lam(n), lam_tmp(n), fullc(Nn), uq(Nq, Ne), rho(Nq, Ne), Vee(Nq, Ne), &
@@ -137,22 +137,22 @@ contains
       scf_L2_eps = 1e-4_dp
       scf_eig_eps = eps
 
-      allocate (tmp(Nq*Ne))
+      allocate (tmp(Nq * Ne))
       allocate (energies(nband))
       xq2 = xq
       call get_quad_pts(xe(:2), xiq_gj(:, -1), xq2)
-      Vin = reshape(thomas_fermi_potential(reshape(xq2, [Nq*Ne]), Z), [Nq, Ne]) + &
-            Z/xq2
+      Vin = reshape(thomas_fermi_potential(reshape(xq2, [Nq * Ne]), Z), [Nq, Ne]) + &
+            Z / xq2
       iter = 0
 
       select case (mixing_scheme)
       case (mixing_scheme_linear)
          call mixing_linear &
-            (Ffunc, integral, reshape(Vin, [Nq*Ne]), &
+            (Ffunc, integral, reshape(Vin, [Nq * Ne]), &
              nband, scf_max_iter, scf_alpha, scf_L2_eps, scf_eig_eps, tmp)
       case (mixing_scheme_pulay)
          call mixing_pulay &
-            (Ffunc, integral, matvec, matmat, reshape(Vin, [Nq*Ne]), &
+            (Ffunc, integral, matvec, matmat, reshape(Vin, [Nq * Ne]), &
              nband, scf_max_iter, scf_alpha, scf_L2_eps, scf_eig_eps, tmp, 5, 1)
       case default
          error stop "Type of mixing not implemented."
@@ -168,7 +168,7 @@ contains
          logical :: accurate_eigensolver
          accurate_eigensolver = .true.
          iter = iter + 1
-         print *, "SCF iteration:", iter
+         print*,"SCF iteration:", iter
          Vin = reshape(x, shape(Vin))
          rho = 0
          idx = 0
@@ -181,10 +181,10 @@ contains
             if (alpha_j(kappa) > -1) then
                call get_quad_pts(xe(:2), xiq_gj(:, kappa), xq1)
                call proj_fn(Nq - 1, xe(:2), xiq_gj(:, -1), wtq_gj(:, -1), xiq_gj(:, kappa), Vin, V(:, :1))
-               V(:, 1) = V(:, 1) - Z/xq1(:, 1)
-               V(:, 2:) = Vin(:, 2:) - Z/xq(:, 2:)
+               V(:, 1) = V(:, 1) - Z / xq1(:, 1)
+               V(:, 2:) = Vin(:, 2:) - Z / xq(:, 2:)
             else
-               V = Vin - Z/xq
+               V = Vin - Z / xq
             end if
 
             call assemble_radial_dirac_SH(V, kappa, xin, xe, ib, xiq, wtq, &
@@ -207,15 +207,15 @@ contains
 
                call c2fullc2(in, ib, D(:Nb, i), fullc)
                call fe2quad(xe, xin, xiq, in, fullc, uq)
-               rho0 = rho0 - focc(i, kappa)*uq**2*xq**alpha_j(kappa)
+               rho0 = rho0 - focc(i, kappa) * uq**2 * xq**alpha_j(kappa)
                call fe2quad(xe, xin, xiq_gj(:, -1), in, fullc, uq)
-               rho1(:, 1) = rho1(:, 1) - focc(i, kappa)*uq(:, 1)**2*xq2(:, 1)**alpha_j(kappa)
+               rho1(:, 1) = rho1(:, 1) - focc(i, kappa) * uq(:, 1)**2 * xq2(:, 1)**alpha_j(kappa)
 
                call c2fullc2(in, ib, D(Nb + 1:, i), fullc)
                call fe2quad(xe, xin, xiq, in, fullc, uq)
-               rho0 = rho0 - focc(i, kappa)*uq**2*xq**alpha_j(kappa)
+               rho0 = rho0 - focc(i, kappa) * uq**2 * xq**alpha_j(kappa)
                call fe2quad(xe, xin, xiq_gj(:, -1), in, fullc, uq)
-               rho1(:, 1) = rho1(:, 1) - focc(i, kappa)*uq(:, 1)**2*xq2(:, 1)**alpha_j(kappa)
+               rho1(:, 1) = rho1(:, 1) - focc(i, kappa) * uq(:, 1)**2 * xq2(:, 1)**alpha_j(kappa)
 
                idx = idx + 1
                eng(focc_idx(i, kappa)) = sqrt(lam(i)) - c**2
@@ -229,7 +229,7 @@ contains
          energies = eng
 
          rho0(:, 1) = rho1(:, 1)
-         rho = rho0/(4*pi)
+         rho = rho0 / (4 * pi)
          Vee = Vee + hartree_potential_gj(Nq - 1, xe, xiq, wtq, &
                                           xiq_gj(:, -1), wtq_gj(:, -1), alpha_j(-1), -rho0)
 
@@ -242,7 +242,7 @@ contains
          Vout = Vee + Vxc ! This term is added later: -Z/xq
          y = reshape(Vout, shape(y))
 
-         call total_energy(xe, xiq, wtq, xiq_gj(:, -1), wtq_gj(:, -1), alpha_j(-1), fo, energies, Vin - Z/xq2, Vee, -Z/xq2, exc, &
+         call total_energy(xe, xiq, wtq, xiq_gj(:, -1), wtq_gj(:, -1), alpha_j(-1), fo, energies, Vin - Z / xq2, Vee, -Z / xq2, exc, &
                            xq2, -rho, T_s, E_ee, E_en, EE_xc, Etot)
          !print *, Etot
       end subroutine
@@ -283,14 +283,14 @@ contains
          real(dp) :: E_c, E_band
          rho = -n
 
-         E_band = sum(fo*ks_energies)
-         T_s = E_band + 4*pi*integrate2(xe, xiq, xiq1, wtq, wtq1, alpha, V_in*rho*R**2)
+         E_band = sum(fo * ks_energies)
+         T_s = E_band + 4 * pi * integrate2(xe, xiq, xiq1, wtq, wtq1, alpha, V_in * rho * R**2)
 
-         E_ee = -2*pi*integrate2(xe, xiq, xiq1, wtq, wtq1, alpha, V_h*rho*R**2)
-         E_en = 4*pi*integrate2(xe, xiq, xiq1, wtq, wtq1, alpha, (-V_coulomb)*rho*R**2)
+         E_ee = -2 * pi * integrate2(xe, xiq, xiq1, wtq, wtq1, alpha, V_h * rho * R**2)
+         E_en = 4 * pi * integrate2(xe, xiq, xiq1, wtq, wtq1, alpha, (-V_coulomb) * rho * R**2)
          E_c = E_ee + E_en
 
-         EE_xc = -4*pi*integrate2(xe, xiq, xiq1, wtq, wtq1, alpha, e_xc*rho*R**2)
+         EE_xc = -4 * pi * integrate2(xe, xiq, xiq1, wtq, wtq1, alpha, e_xc * rho * R**2)
 
          Etot = T_s + E_c + EE_xc
       end subroutine
@@ -300,13 +300,13 @@ contains
    subroutine csolve_dirac(Z, p, xiq, wtq, xe, eps, Nq, Ne, nenergies, energies, &
                            Etot, V) bind(c)
       integer(c_int), intent(in) :: Z, p, Nq, Ne, nenergies
-      real(c_double), intent(in) :: xe(Ne)        ! element coordinates
-      real(c_double), intent(in) :: xiq(Nq)       ! quadrature points
-      real(c_double), intent(in) :: wtq(Nq)       ! quadrature weights
+      real(c_double), intent(in) :: xe(Ne) ! element coordinates
+      real(c_double), intent(in) :: xiq(Nq) ! quadrature points
+      real(c_double), intent(in) :: wtq(Nq) ! quadrature weights
       real(c_double), intent(in) :: eps
       real(c_double), intent(out) :: energies(nenergies)
       real(c_double), intent(out) :: Etot
-      real(c_double), intent(out) :: V(size(xiq), size(xe) - 1)    ! SCF potential
+      real(c_double), intent(out) :: V(size(xiq), size(xe) - 1) ! SCF potential
       integer :: DOFs
       real(dp), allocatable :: energies2(:)
 

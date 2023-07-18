@@ -30,7 +30,7 @@ program conv_potential
    character(len=128) :: arg
 
    if (command_argument_count() /= 5) then
-      print *, "./conv_potential <study_type> <equation> <Ne/p> <potential_type> <alpha>"
+      print*,"./conv_potential <study_type> <equation> <Ne/p> <potential_type> <alpha>"
       error stop "Must supply 5 arguments"
    end if
 

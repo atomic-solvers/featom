@@ -53,10 +53,10 @@ contains
       Nb = maxval(ib)
       DOFS = Nb
       if (dirac_int == 1) then
-         DOFS = 2*Nb
+         DOFS = 2 * Nb
          allocate (S2(DOFS, DOFS))
       end if
-      Nn = Ne*p + 1
+      Nn = Ne * p + 1
       if (.not. (Nn == maxval(in))) then
          error stop 'Wrong size for Nn'
       end if
@@ -72,10 +72,10 @@ contains
       end if
 
       if (potential_type == 0) then
-         V = -Z/xq
+         V = -Z / xq
          E_dirac_shift = 500
       else
-         V = xq**2/2
+         V = xq**2 / 2
          E_dirac_shift = 1000
       end if
       if (dirac_int == 1) then
@@ -87,17 +87,17 @@ contains
             call assemble_radial_H(V, l, xin, xe, ib, xiq, wtq, phihq, dphihq, H)
             call assemble_radial_S(xin, xe, ib, wtq_lob, S)
             do i = 1, Nb
-               DSQ(i) = 1/sqrt(S(i))
+               DSQ(i) = 1 / sqrt(S(i))
             end do
             do concurrent(i=1:Nb, j=1:Nb)
-               H(i, j) = H(i, j)*DSQ(i)*DSQ(j)
+               H(i, j) = H(i, j) * DSQ(i) * DSQ(j)
             end do
             call eigh(H, lam2, D)
             do i = 1, size(S)
-               D(i, :) = D(i, :)*DSQ(i)
+               D(i, :) = D(i, :) * DSQ(i)
             end do
             do k = 0, 6 - l
-               ind = (k + l)*(k + l + 1)/2 + l + 1
+               ind = (k + l) * (k + l + 1) / 2 + l + 1
                if (k + 1 > size(lam2)) then
                   lam(ind) = 0
                   eigfn(:, :, ind) = 0
@@ -105,7 +105,7 @@ contains
                   lam(ind) = lam2(k + 1)
                   call c2fullc2(in, ib, D(:Nb, k + 1), fullc)
                   call fe2quad_core(xe, xin, in, fullc, phihq, uq)
-                  eigfn(:, :, ind) = uq/xq
+                  eigfn(:, :, ind) = uq / xq
                end if
             end do
          end do
@@ -115,7 +115,7 @@ contains
             if (alpha_j(kappa) > -1) then
                call gauss_jacobi(Nq, 0.0_dp, alpha_j(kappa), xiq1, wtq1)
                call get_quad_pts(xe(:2), xiq1, xq1)
-               V(:, :1) = -Z/xq1(:, :1) - E_dirac_shift
+               V(:, :1) = -Z / xq1(:, :1) - E_dirac_shift
             end if
             call assemble_radial_dirac_SH(V, kappa, xin, xe, ib, xiq, wtq, xiq1, wtq1, &
                                           alpha(kappa), alpha_j(kappa), c, S2, H)
@@ -126,9 +126,9 @@ contains
                l = kappa
             end if
             do k = 1, 7 - l
-               ind = (kappa + 1)*(kappa + 1) + (k - 1)*(2*kappa + 1) + (k - 1)*(k - 2)
+               ind = (kappa + 1) * (kappa + 1) + (k - 1) * (2 * kappa + 1) + (k - 1) * (k - 2)
                if (kappa < 0) then
-                  ind = ind + 2*k - 2 + (4*k - 2)*(-1 - kappa)
+                  ind = ind + 2 * k - 2 + (4 * k - 2) * (-1 - kappa)
                end if
                if (kappa == -1) then
                   ind = ind + 1
@@ -138,10 +138,10 @@ contains
 
                call c2fullc2(in, ib, D(:Nb, k), fullc)
                call fe2quad(xe, xin, xiq, in, fullc, uq)
-               eigfn(:, :, ind) = uq*xq**(alpha_j(kappa)/2)
+               eigfn(:, :, ind) = uq * xq**(alpha_j(kappa) / 2)
                if (alpha_j(kappa) > -1) then
                   call fe2quad(xe, xin, xiq1, in, fullc, uq)
-                  eigfn(:, 1, ind) = uq(:, 1)*xq1(:, 1)**(alpha_j(kappa)/2)
+                  eigfn(:, 1, ind) = uq(:, 1) * xq1(:, 1)**(alpha_j(kappa) / 2)
                end if
             end do
          end do

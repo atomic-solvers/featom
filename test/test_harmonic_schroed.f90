@@ -10,8 +10,8 @@ program test_harmonic_schroed
    use schroed_dirac_solver, only: total_energy
    implicit none
 
-   real(dp), allocatable :: xe(:)              ! element coordinates
-   real(dp), allocatable :: xiq(:), wtq(:)     ! quadrature points and weights
+   real(dp), allocatable :: xe(:) ! element coordinates
+   real(dp), allocatable :: xiq(:), wtq(:) ! quadrature points and weights
    integer :: p, Ne, Nq, Z, i, DOFs
    real(dp) :: rmin, rmax, a, err, Etot
    real(dp), allocatable :: energies(:), xq(:, :), eigfn(:, :, :)
@@ -116,12 +116,12 @@ program test_harmonic_schroed
    do kappa = Lmin, Lmax
       if (kappa == 0) cycle
       ! asymptotic at r = 0
-      asympt = sqrt(kappa**2 - Z**2/c**2)
+      asympt = sqrt(kappa**2 - Z**2 / c**2)
       ! solve for P/r**alpha
       if (alpha_int == -1) then
          alpha(kappa) = asympt
          ! power of r for Gauss-Jacobi quadrature
-         alpha_j(kappa) = 2*asympt - 2
+         alpha_j(kappa) = 2 * asympt - 2
       else
          alpha(kappa) = alpha_int
          ! don't use Gauss-Jacobi quadrature
@@ -153,17 +153,17 @@ program test_harmonic_schroed
    Etot = sum(energies)
    print "(i3, f6.1, i5, f8.1, i3, i3, i5, f22.12)", Z, rmax, Ne, a, p, Nq, &
       DOFs, Etot
-   print *
-   print *, "Comparison of calculated and reference energies"
-   print *
-   print *, "Total energy:"
+   print*
+   print*,"Comparison of calculated and reference energies"
+   print*
+   print*,"Total energy:"
    print "(a20,a20,a10)", "E", "E_ref", "error"
    err = abs(Etot - Etot_ref)
    print "(f20.12, f20.12, es10.2)", Etot, Etot_ref, err
    if (.not. (err < 1e-10_dp)) then
       error stop 'assert failed'
    end if
-   print *, "Eigenvalues:"
+   print*,"Eigenvalues:"
    print "(a4,a20,a20,a10)", "n", "E", "E_ref", "error"
    do i = 1, size(energies)
       err = abs(energies(i) - energies_ref(i))
@@ -173,7 +173,7 @@ program test_harmonic_schroed
       end if
    end do
 
-   print *, "Eigenfunctions saved in data_harmonic_schroed.txt"
+   print*,"Eigenfunctions saved in data_harmonic_schroed.txt"
    open (newunit=u, file="data_harmonic_schroed.txt", status="replace")
    write (u, *) xq
    do i = 1, size(energies)

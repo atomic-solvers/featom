@@ -28,27 +28,27 @@ contains
       if (.not. (n > l)) error stop "'n' must be greater than 'l'"
       if (l == 0 .and. relat == 3) error stop "Spin must be up for l==0."
       if (relat == 0) then
-         E_nl = -Z**2/(2.0_dp*n**2)
+         E_nl = -Z**2 / (2.0_dp * n**2)
       else
          if (relat == 2) then
             kappa = -l - 1
          else
             kappa = l
          end if
-         beta = sqrt(kappa**2 - (Z/c)**2)
-         E_nl = c**2/sqrt(1 + (Z/c)**2/(n - abs(kappa) + beta)**2) - c**2
+         beta = sqrt(kappa**2 - (Z / c)**2)
+         E_nl = c**2 / sqrt(1 + (Z / c)**2 / (n - abs(kappa) + beta)**2) - c**2
       end if
    end function
 
    function thomas_fermi_potential(R, Z, cut) result(V)
 ! Generalized Thomas-Fermi atomic potential
       real(dp), intent(in) :: R(:) ! Radial grid
-      integer, intent(in) :: Z     ! Atomic number
+      integer, intent(in) :: Z ! Atomic number
       logical, intent(in), optional :: cut ! Cut the potential, default .true.
       real(dp) :: x(size(R)), Z_eff(size(R)), V(size(R))
       real(dp) :: alpha, beta, gamma
 
-      x = R*(128*Z/(9*pi**2))**(1.0_dp/3)
+      x = R * (128 * Z / (9 * pi**2))**(1.0_dp / 3)
 ! Z_eff(x) = Z * phi(x), where phi(x) satisfies the Thomas-Fermi equation:
 !   phi'' = phi**(3/2) / sqrt(x)
 ! with boundary conditions:
@@ -59,20 +59,20 @@ contains
       alpha = 0.7280642371_dp
       beta = -0.5430794693_dp
       gamma = 0.3612163121_dp
-      Z_eff = Z*(1 + alpha*sqrt(x) + beta*x*exp(-gamma*sqrt(x)))**2* &
-              exp(-2*alpha*sqrt(x))
+      Z_eff = Z * (1 + alpha * sqrt(x) + beta * x * exp(-gamma * sqrt(x)))**2 * &
+              exp(-2 * alpha * sqrt(x))
 ! This keeps all the eigenvalues of the radial problem negative:
       if (.not. present(cut)) where (Z_eff < 1) Z_eff = 1
-      V = -Z_eff/r
+      V = -Z_eff / r
    end function
 
    function thomas_fermi_density(R, Z) result(rho)
 ! Generalized Thomas-Fermi atomic potential
       real(dp), intent(in) :: R(:) ! Radial grid
-      integer, intent(in) :: Z     ! Atomic number
+      integer, intent(in) :: Z ! Atomic number
       real(dp) :: V(size(R)), rho(size(R))
       V = thomas_fermi_potential(R, Z, .false.)
-      rho = -1/(3*pi**2)*(-2*V)**(3._dp/2)
+      rho = -1 / (3 * pi**2) * (-2 * V)**(3._dp / 2)
    end function
 
    function get_tf_energies(Z, no, fo) result(E)
@@ -88,7 +88,7 @@ contains
          end if
          Zeff = Zeff - int(fo(i))
          if (Zeff <= 0) error stop "Negative ions not allowed"
-         E(i) = -(1.0_dp*Zeff/no(i))**2/2
+         E(i) = -(1.0_dp * Zeff / no(i))**2 / 2
       end do
    end function
 
@@ -97,7 +97,7 @@ contains
       real(dp) :: E(size(no))
       integer :: i
       do i = 1, size(no)
-         E(i) = -1.0_dp*Z**2/(2*no(i)**2)
+         E(i) = -1.0_dp * Z**2 / (2 * no(i)**2)
       end do
    end function
 

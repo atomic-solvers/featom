@@ -24,7 +24,7 @@ program conv
    character(len=128) :: arg
 
    if (command_argument_count() /= 3) then
-      print *, "./conv <study_type> <equation> <Ne/p>"
+      print*,"./conv <study_type> <equation> <Ne/p>"
       error stop "Must supply 3 arguments"
    end if
 

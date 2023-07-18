@@ -64,26 +64,26 @@ contains
          return
       end if
 
-      Q = sqrt(4*c - b**2)
-      rs = (3/(4*pi*n))**(1.0_dp/3)
+      Q = sqrt(4 * c - b**2)
+      rs = (3 / (4 * pi * n))**(1.0_dp / 3)
       y = sqrt(rs)
-      ec = A/2*(log(y**2/get_Y(y, b, c)) + 2*b/Q*atan(Q/(2*y + b)) &
-                - b*y0/get_Y(y0, b, c)*( &
-                log((y - y0)**2/get_Y(y, b, c)) &
-                + 2*(b + 2*y0)/Q*atan(Q/(2*y + b)) &
-                ))
-      Vc = ec - A/6*(c*(y - y0) - b*y0*y)/((y - y0)*get_Y(y, b, c))
-      ex = -3/(4*pi)*(3*pi**2*n)**(1.0_dp/3)
-      Vx = 4*ex/3
+      ec = A / 2 * (log(y**2 / get_Y(y, b, c)) + 2 * b / Q * atan(Q / (2 * y + b)) &
+                    - b * y0 / get_Y(y0, b, c) * ( &
+                    log((y - y0)**2 / get_Y(y, b, c)) &
+                    + 2 * (b + 2 * y0) / Q * atan(Q / (2 * y + b)) &
+                    ))
+      Vc = ec - A / 6 * (c * (y - y0) - b * y0 * y) / ((y - y0) * get_Y(y, b, c))
+      ex = -3 / (4 * pi) * (3 * pi**2 * n)**(1.0_dp / 3)
+      Vx = 4 * ex / 3
 
       if (relat) then
-         beta = -4*pi*ex/(3*c_light)
+         beta = -4 * pi * ex / (3 * c_light)
          mu = sqrt(1 + beta**2)
-         R = 1 - 3*((beta*mu - log(beta + mu))/(beta**2))**2/2
-         S = 3*log(beta + mu)/(2*beta*mu) - 1.0_dp/2
+         R = 1 - 3 * ((beta * mu - log(beta + mu)) / (beta**2))**2 / 2
+         S = 3 * log(beta + mu) / (2 * beta * mu) - 1.0_dp / 2
 
-         ex = ex*R
-         Vx = Vx*S
+         ex = ex * R
+         Vx = Vx * S
       end if
       exc = ex + ec
       Vxc = Vx + Vc
@@ -92,7 +92,7 @@ contains
 
       real(dp) function get_Y(y, b, c)
          real(dp), intent(in) :: y, b, c
-         get_Y = y**2 + b*y + c
+         get_Y = y**2 + b * y + c
       end function
 
    end subroutine
@@ -116,17 +116,17 @@ contains
          return
       end if
 
-      Q = sqrt(4*c - b**2)
-      rs = (3/(4*pi*n))**(1.0_dp/3)
+      Q = sqrt(4 * c - b**2)
+      rs = (3 / (4 * pi * n))**(1.0_dp / 3)
       y = sqrt(rs)
-      ec = A/2*(log(y**2/get_Y(y, b, c)) + 2*b/Q*atan(Q/(2*y + b)) &
-                - b*y0/get_Y(y0, b, c)*( &
-                log((y - y0)**2/get_Y(y, b, c)) &
-                + 2*(b + 2*y0)/Q*atan(Q/(2*y + b)) &
-                ))
-      Vc = ec - A/6*(c*(y - y0) - b*y0*y)/((y - y0)*get_Y(y, b, c))
-      ex = -3/(4*pi)*(3*pi**2*n)**(1.0_dp/3)
-      Vx = 4*ex/3
+      ec = A / 2 * (log(y**2 / get_Y(y, b, c)) + 2 * b / Q * atan(Q / (2 * y + b)) &
+                    - b * y0 / get_Y(y0, b, c) * ( &
+                    log((y - y0)**2 / get_Y(y, b, c)) &
+                    + 2 * (b + 2 * y0) / Q * atan(Q / (2 * y + b)) &
+                    ))
+      Vc = ec - A / 6 * (c * (y - y0) - b * y0 * y) / ((y - y0) * get_Y(y, b, c))
+      ex = -3 / (4 * pi) * (3 * pi**2 * n)**(1.0_dp / 3)
+      Vx = 4 * ex / 3
 
       exc = ex + ec
       Vxc = Vx + Vc
@@ -135,7 +135,7 @@ contains
 
       real(dp) pure function get_Y(y, b, c)
          real(dp), intent(in) :: y, b, c
-         get_Y = y**2 + b*y + c
+         get_Y = y**2 + b * y + c
       end function
 
    end subroutine
@@ -166,19 +166,19 @@ contains
          return
       end if
 
-      ex = -3/(4*pi)*(3*pi**2*n)**(1.0_dp/3)
-      Vx = 4*ex/3
+      ex = -3 / (4 * pi) * (3 * pi**2 * n)**(1.0_dp / 3)
+      Vx = 4 * ex / 3
 
-      rs = (3/(4*pi*n))**(1.0_dp/3)
+      rs = (3 / (4 * pi * n))**(1.0_dp / 3)
       if (rs >= 1) then
          sqrt_rs = sqrt(rs)
-         ec = gam/(1 + beta1*sqrt_rs + beta2*rs)
-         Vc = ec*(1 + 7*beta1*sqrt_rs/6 + 4*beta2*rs/3)/ &
-              (1 + beta1*sqrt_rs + beta2*rs)
+         ec = gam / (1 + beta1 * sqrt_rs + beta2 * rs)
+         Vc = ec * (1 + 7 * beta1 * sqrt_rs / 6 + 4 * beta2 * rs / 3) / &
+              (1 + beta1 * sqrt_rs + beta2 * rs)
       else
          log_rs = log(rs)
-         ec = A*log_rs + B + C*rs*log_rs + D*rs
-         Vc = A*log_rs + (B - A/3) + 2*C*rs*log_rs/3 + (2*D - C)*rs/3
+         ec = A * log_rs + B + C * rs * log_rs + D * rs
+         Vc = A * log_rs + (B - A / 3) + 2 * C * rs * log_rs / 3 + (2 * D - C) * rs / 3
       end if
 
       exc = ex + ec
@@ -199,18 +199,18 @@ contains
       real(dp), parameter :: D = -0.0116_dp
       real(dp) :: ex, ec, Vx, Vc, rs, sqrt_rs, log_rs
 
-      ex = -3/(4*pi)*(3*pi**2*n)**(1.0_dp/3)
-      Vx = 4*ex/3
+      ex = -3 / (4 * pi) * (3 * pi**2 * n)**(1.0_dp / 3)
+      Vx = 4 * ex / 3
 
-      rs = (3/(4*pi*n))**(1.0_dp/3)
+      rs = (3 / (4 * pi * n))**(1.0_dp / 3)
       if (rs >= 1) then
          sqrt_rs = sqrt(rs)
-         ec = gam/(1 + beta1*sqrt_rs + beta2*rs)
-         Vc = ec*(1 + 7*beta1*sqrt_rs/6 + 4*beta2*rs/3)/ &
-              (1 + beta1*sqrt_rs + beta2*rs)
+         ec = gam / (1 + beta1 * sqrt_rs + beta2 * rs)
+         Vc = ec * (1 + 7 * beta1 * sqrt_rs / 6 + 4 * beta2 * rs / 3) / &
+              (1 + beta1 * sqrt_rs + beta2 * rs)
       else
          log_rs = log(rs)
-         Vc = A*log_rs + (B - A/3) + 2*C*rs*log_rs/3 + (2*D - C)*rs/3
+         Vc = A * log_rs + (B - A / 3) + 2 * C * rs * log_rs / 3 + (2 * D - C) * rs / 3
       end if
 
       Vxc = Vx + Vc

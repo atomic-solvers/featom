@@ -27,7 +27,7 @@ program gpd_coulomb_schroed_nelements
    integer :: idx
 
    do idx = 1, size(p_values)
-      print *, "Running Schroedinger Coulomb number of elements ", &
+      print*,"Running Schroedinger Coulomb number of elements ", &
          2, 0, p_values(idx), 0, -1
       call run_convergence_potential(2, 0, p_values(idx), &
                                      0, -1, "app")

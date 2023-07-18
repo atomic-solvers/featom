@@ -677,7 +677,7 @@ contains
          fo = [2, 2, 6, 2, 6, 10, 2, 6, 10, 14, 2, 6, 10, 3, 2, 6, 1, 2]
 
       case default
-         print *, "Z =", Z
+         print*,"Z =", Z
          error stop "Z not supported."
       end select
    end subroutine
@@ -721,12 +721,12 @@ contains
          else
             no_tmp(j) = no2(i)
             lo_tmp(j) = lo2(i)
-            fo_tmp(j) = fo2(i)*(2*lo2(i))/(2*(2*lo2(i) + 1))
+            fo_tmp(j) = fo2(i) * (2 * lo2(i)) / (2 * (2 * lo2(i) + 1))
             so_tmp(j) = 0
             j = j + 1
             no_tmp(j) = no2(i)
             lo_tmp(j) = lo2(i)
-            fo_tmp(j) = fo2(i)*(2*lo2(i) + 2)/(2*(2*lo2(i) + 1))
+            fo_tmp(j) = fo2(i) * (2 * lo2(i) + 2) / (2 * (2 * lo2(i) + 1))
             so_tmp(j) = 1
          end if
          j = j + 1

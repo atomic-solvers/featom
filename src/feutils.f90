@@ -18,15 +18,15 @@ contains
 
    subroutine get_parent_quad_pts_wts(qtype, Nq, xiq, wtq)
 ! Quadrature points and weights
-      integer, intent(in) :: qtype      ! type of quadrature: 1= Gauss, 2= Lobatto
-      integer, intent(in) :: Nq         ! number or quadrature points/weights
-      real(dp), intent(out) :: xiq(:)   ! quadrature points
-      real(dp), intent(out) :: wtq(:)   ! quadrature weights
+      integer, intent(in) :: qtype ! type of quadrature: 1= Gauss, 2= Lobatto
+      integer, intent(in) :: Nq ! number or quadrature points/weights
+      real(dp), intent(out) :: xiq(:) ! quadrature points
+      real(dp), intent(out) :: wtq(:) ! quadrature weights
       select case (qtype)
-      case (1)  ! Gauss
+      case (1) ! Gauss
          xiq = gauss_pts(Nq)
          wtq = gauss_wts(Nq)
-      case (2)  ! Lobatto
+      case (2) ! Lobatto
          xiq = lobatto_pts(Nq)
          wtq = lobatto_wts(Nq)
       case default
@@ -36,19 +36,19 @@ contains
 
    subroutine get_nodes(xe, xin, xn)
 ! generates basis nodes xn via affine mapping of parent nodes xin to elements xe
-      real(dp), intent(in) :: xe(:)     ! elements: xe(i/i+1) = coord of left/right boundary of ith element
-      real(dp), intent(in) :: xin(:)    ! parent basis nodes: xin(i) = coord of ith parent basis fn node
-      real(dp), intent(out) :: xn(:)    ! basis nodes: xn(i) = coordinate of ith basis fn node
-      real(dp) :: xa, xb                ! left and right element boundaries
+      real(dp), intent(in) :: xe(:) ! elements: xe(i/i+1) = coord of left/right boundary of ith element
+      real(dp), intent(in) :: xin(:) ! parent basis nodes: xin(i) = coord of ith parent basis fn node
+      real(dp), intent(out) :: xn(:) ! basis nodes: xn(i) = coordinate of ith basis fn node
+      real(dp) :: xa, xb ! left and right element boundaries
       integer Ne, p, i, j
       Ne = size(xe) - 1
       p = size(xin) - 1
       xn(1) = xe(1) ! left-most node
-      do i = 1, Ne   ! for each element ...
+      do i = 1, Ne ! for each element ...
          xa = xe(i); xb = xe(i + 1)
-         xn(i*p + 1) = xb   ! right-end node
+         xn(i * p + 1) = xb ! right-end node
          do j = 2, p
-            xn((i - 1)*p + j) = (xin(j) + 1)/2*(xb - xa) + xa ! internal nodes: affine mapping
+            xn((i - 1) * p + j) = (xin(j) + 1) / 2 * (xb - xa) + xa ! internal nodes: affine mapping
          end do
       end do
    end subroutine
@@ -58,15 +58,15 @@ contains
    subroutine define_connect(bca, bcb, Ne, p, in, ib)
 ! constructs connectivity matrices in and ib defining local-global node and basis
 ! correspondence, respectively
-      integer, intent(in):: bca        ! boundary condition at x=a: 1=Dirichlet, 2=Neumann,
+      integer, intent(in) :: bca ! boundary condition at x=a: 1=Dirichlet, 2=Neumann,
       ! 3=periodic, 4=antiperiodic. If bca=3 or 4, bcb must be set correspondingly
-      integer, intent(in):: bcb        ! boundary condition at x=b: 1=Dirichlet, 2=Neumann,
+      integer, intent(in) :: bcb ! boundary condition at x=b: 1=Dirichlet, 2=Neumann,
       ! 3=periodic, 4=antiperiodic. If bcb = 3 or 4, bca must be set correspondingly
-      integer, intent(in):: Ne         ! number of elements
-      integer, intent(in):: p          ! order of FE/SE basis
-      integer, intent(out):: in(:, :)   ! nodal connectivity: in(i,j) = index of basis node
+      integer, intent(in) :: Ne ! number of elements
+      integer, intent(in) :: p ! order of FE/SE basis
+      integer, intent(out) :: in(:, :) ! nodal connectivity: in(i,j) = index of basis node
       ! corresponding to local node i of element j
-      integer, intent(out):: ib(:, :)  ! basis connectivity: ib(i,j) = index of basis function
+      integer, intent(out) :: ib(:, :) ! basis connectivity: ib(i,j) = index of basis function
       ! associated with local basis function i of element j. 0 = no associated basis fn.
       ! -1 = associated with antiperiodic basis fn, with negative multiplier
       integer i, e
@@ -78,34 +78,34 @@ contains
 ! construct nodal connectivity matrix
       do e = 1, Ne
          do i = 1, p + 1
-            in(i, e) = (e - 1)*p + i
+            in(i, e) = (e - 1) * p + i
          end do
       end do
 ! construct basis connectivity matrix
       ! construct for natural BCs
       ib = in
       ! modify for other BCs
-      if (bca == 1) ib = ib - 1        ! Dirichlet at x=a -> omit basis fn at node 1
-      select case (bcb)           ! x=b....
-      case (1); ib(p + 1, Ne) = 0     ! Dirichlet
-      case (3); ib(p + 1, Ne) = 1     ! periodic
-      case (4); ib(p + 1, Ne) = -1    ! antiperiodic
+      if (bca == 1) ib = ib - 1 ! Dirichlet at x=a -> omit basis fn at node 1
+      select case (bcb) ! x=b....
+      case (1); ib(p + 1, Ne) = 0 ! Dirichlet
+      case (3); ib(p + 1, Ne) = 1 ! periodic
+      case (4); ib(p + 1, Ne) = -1 ! antiperiodic
       end select
    end subroutine
 
    subroutine define_connect_n(bca, bcb, Ne, p, Nm, in, ib)
 ! constructs connectivity matrices in and ib defining local-global node and
 ! basis correspondence, respectively. Works for arbitrary number of meshes
-      integer, intent(in):: bca(:)        ! bca(m) boundary condition at x=a for mesh
+      integer, intent(in) :: bca(:) ! bca(m) boundary condition at x=a for mesh
       ! m: 1=Dirichlet, 2=Neumann
-      integer, intent(in):: bcb(:)        ! bca(m) boundary condition at x=b for mesh
+      integer, intent(in) :: bcb(:) ! bca(m) boundary condition at x=b for mesh
       ! m: 1=Dirichlet, 2=Neumann
-      integer, intent(in):: Ne         ! number of elements
-      integer, intent(in):: p          ! order of FE/SE basis
-      integer, intent(in):: Nm         ! number of meshes
-      integer, intent(out):: in(:, :, :)   ! nodal connectivity: in(i,j,k) = index of
+      integer, intent(in) :: Ne ! number of elements
+      integer, intent(in) :: p ! order of FE/SE basis
+      integer, intent(in) :: Nm ! number of meshes
+      integer, intent(out) :: in(:, :, :) ! nodal connectivity: in(i,j,k) = index of
       ! basis node corresponding to local node i of element j of mesh k
-      integer, intent(out):: ib(:, :, :)  ! basis connectivity: ib(i,j,k) = index of
+      integer, intent(out) :: ib(:, :, :) ! basis connectivity: ib(i,j,k) = index of
       ! basis function associated with local basis function i of element j of
       ! mesh k.  0 = no associated basis fn
       integer :: i, e, m, dofs
@@ -146,16 +146,16 @@ contains
    subroutine define_connect_np(bca, bcb, Ne, p, Nm, in, ib)
 ! constructs connectivity matrices in and ib defining local-global node and
 ! basis correspondence, respectively. Works for arbitrary number of meshes
-      integer, intent(in):: bca(:)        ! bca(m) boundary condition at x=a for mesh
+      integer, intent(in) :: bca(:) ! bca(m) boundary condition at x=a for mesh
       ! m: 1=Dirichlet, 2=Neumann
-      integer, intent(in):: bcb(:)        ! bca(m) boundary condition at x=b for mesh
+      integer, intent(in) :: bcb(:) ! bca(m) boundary condition at x=b for mesh
       ! m: 1=Dirichlet, 2=Neumann
-      integer, intent(in):: Ne         ! number of elements
-      integer, intent(in):: p(:)          ! order of FE/SE basis
-      integer, intent(in):: Nm         ! number of meshes
-      integer, intent(out):: in(:, :, :)   ! nodal connectivity: in(i,j,k) = index of
+      integer, intent(in) :: Ne ! number of elements
+      integer, intent(in) :: p(:) ! order of FE/SE basis
+      integer, intent(in) :: Nm ! number of meshes
+      integer, intent(out) :: in(:, :, :) ! nodal connectivity: in(i,j,k) = index of
       ! basis node corresponding to local node i of element j of mesh k
-      integer, intent(out):: ib(:, :, :)  ! basis connectivity: ib(i,j,k) = index of
+      integer, intent(out) :: ib(:, :, :) ! basis connectivity: ib(i,j,k) = index of
       ! basis function associated with local basis function i of element j of
       ! mesh k.  0 = no associated basis fn
       integer :: i, e, m, dofs
@@ -198,14 +198,14 @@ contains
 
    subroutine get_quad_pts(xe, xiq, xq)
 ! generates quadrature points xq via affine mapping of parent quad points xiq to elements xe
-      real(dp), intent(in):: xe(:)     ! elements: xe(i/i+1) = coord of left/right boundary of ith element
-      real(dp), intent(in):: xiq(:)    ! parent quad pts
-      real(dp), intent(out):: xq(:, :)  ! quad pts: xq(i,j) = coordinate of ith point in jth element
-      real(dp) xa, xb                ! left and right element boundaries
+      real(dp), intent(in) :: xe(:) ! elements: xe(i/i+1) = coord of left/right boundary of ith element
+      real(dp), intent(in) :: xiq(:) ! parent quad pts
+      real(dp), intent(out) :: xq(:, :) ! quad pts: xq(i,j) = coordinate of ith point in jth element
+      real(dp) xa, xb ! left and right element boundaries
       integer ie
       do ie = 1, size(xe) - 1
          xa = xe(ie); xb = xe(ie + 1)
-         xq(:, ie) = (xb - xa)/2*xiq + (xb + xa)/2 ! affine transformation
+         xq(:, ie) = (xb - xa) / 2 * xiq + (xb + xa) / 2 ! affine transformation
       end do
    end subroutine
 
@@ -213,18 +213,18 @@ contains
 ! transforms fullu from FE-coefficient to quadrature-grid representation.
 ! fullu is a full FE coefficient vector, having values for all nodes in the mesh,
 ! including domain-boundary nodes.
-      real(dp), intent(in) :: xe(:)     ! elements: xe(i/i+1) = coord of left/right boundary of ith element
-      real(dp), intent(in) :: xin(:)    ! parent basis nodes: xin(i) = coordinate of ith parent basis node
-      real(dp), intent(in) :: xiq(:)    ! quadrature points
-      integer, intent(in) :: in(:, :)    ! nodal connectivity: in(i,j) = index of basis node
+      real(dp), intent(in) :: xe(:) ! elements: xe(i/i+1) = coord of left/right boundary of ith element
+      real(dp), intent(in) :: xin(:) ! parent basis nodes: xin(i) = coordinate of ith parent basis node
+      real(dp), intent(in) :: xiq(:) ! quadrature points
+      integer, intent(in) :: in(:, :) ! nodal connectivity: in(i,j) = index of basis node
       ! corresponding to local node i of element j
-      real(dp), intent(in) :: fullu(:)  ! FE coefficient representation of fullu: full vector, including
+      real(dp), intent(in) :: fullu(:) ! FE coefficient representation of fullu: full vector, including
       ! values for domain-boundary nodes / basis functions
-      real(dp), intent(out) :: uq(:, :)  ! quadrature-grid representation of fullu
+      real(dp), intent(out) :: uq(:, :) ! quadrature-grid representation of fullu
       ! uq(i,j) = value at ith quadrature point of jth element
       real(dp) :: phihq(size(xiq), size(xin)) ! parent basis fn values at quadrature points:
       ! phihq(i,j) = value of jth function at ith quadrature point
-      integer :: iln, iq                ! local node, quad point indices
+      integer :: iln, iq ! local node, quad point indices
 
 ! tabulate parent basis at quadrature points
       do iln = 1, size(xin)
@@ -240,22 +240,22 @@ contains
 ! transforms fullu from FE-coefficient to quadrature-grid representation.
 ! fullu is a full FE coefficient vector, having values for all nodes in the mesh,
 ! including domain-boundary nodes.
-      real(dp), intent(in) :: xe(:)     ! elements: xe(i/i+1) = coord of left/right boundary of ith element
-      real(dp), intent(in) :: xin(:)    ! parent basis nodes: xin(i) = coordinate of ith parent basis node
-      integer, intent(in) :: in(:, :)    ! nodal connectivity: in(i,j) = index of basis node
+      real(dp), intent(in) :: xe(:) ! elements: xe(i/i+1) = coord of left/right boundary of ith element
+      real(dp), intent(in) :: xin(:) ! parent basis nodes: xin(i) = coordinate of ith parent basis node
+      integer, intent(in) :: in(:, :) ! nodal connectivity: in(i,j) = index of basis node
       ! corresponding to local node i of element j
-      real(dp), intent(in) :: fullu(:)  ! FE coefficient representatin of fullu: full vector, including
+      real(dp), intent(in) :: fullu(:) ! FE coefficient representatin of fullu: full vector, including
       ! values for domain-boundary nodes / basis functions
-      real(dp), intent(in) :: phihq(:, :)  ! parent basis at quadrature points
-      real(dp), intent(out) :: uq(:, :)  ! quadrature-grid representatin of fullu
+      real(dp), intent(in) :: phihq(:, :) ! parent basis at quadrature points
+      real(dp), intent(out) :: uq(:, :) ! quadrature-grid representatin of fullu
       ! uq(i,j) = value at ith quadrature point of jth element
-      integer :: ie, iln                ! element, local node
+      integer :: ie, iln ! element, local node
 
 ! evaluate at quad points in each element
       do ie = 1, size(xe) - 1
          uq(:, ie) = 0
          do iln = 1, size(xin)
-            uq(:, ie) = uq(:, ie) + fullu(in(iln, ie))*phihq(:, iln)
+            uq(:, ie) = uq(:, ie) + fullu(in(iln, ie)) * phihq(:, iln)
          end do
       end do
    end subroutine
@@ -264,21 +264,21 @@ contains
 ! transforms fullu from FE-coefficient to quadrature-grid representation.
 ! fullu is a full FE coefficient vector, having values for all nodes in the mesh,
 ! including domain-boundary nodes.
-      real(dp), intent(in) :: xe(:)     ! elements: xe(i/i+1) = coord of left/right boundary of ith element
-      real(dp), intent(in) :: xin(:)    ! parent basis nodes: xin(i) = coordinate of ith parent basis node
-      real(dp), intent(in) :: xiq(:)    ! quadrature points
-      real(dp), intent(in) :: xiq1(:)    ! quadrature points for first element
-      integer, intent(in) :: in(:, :)    ! nodal connectivity: in(i,j) = index of basis node
+      real(dp), intent(in) :: xe(:) ! elements: xe(i/i+1) = coord of left/right boundary of ith element
+      real(dp), intent(in) :: xin(:) ! parent basis nodes: xin(i) = coordinate of ith parent basis node
+      real(dp), intent(in) :: xiq(:) ! quadrature points
+      real(dp), intent(in) :: xiq1(:) ! quadrature points for first element
+      integer, intent(in) :: in(:, :) ! nodal connectivity: in(i,j) = index of basis node
       ! corresponding to local node i of element j
-      real(dp), intent(in) :: fullu(:)  ! FE coefficient representatin of fullu: full vector, including
+      real(dp), intent(in) :: fullu(:) ! FE coefficient representatin of fullu: full vector, including
       ! values for domain-boundary nodes / basis functions
-      real(dp), intent(out) :: uq(:, :)  ! quadrature-grid representatin of fullu
+      real(dp), intent(out) :: uq(:, :) ! quadrature-grid representatin of fullu
       ! uq(i,j) = value at ith quadrature point of jth element
       real(dp) :: phihq(size(xiq), size(xin)) ! parent basis fn values at quadrature points:
       ! phihq(i,j) = value of jth function at ith quadrature point
       real(dp) :: phihq1(size(xiq), size(xin)) ! parent basis fn values at quadrature points:
       ! phihq(i,j) = value of jth function at ith quadrature point
-      integer :: ie, iln, iq                ! element, local node, quad point indices
+      integer :: ie, iln, iq ! element, local node, quad point indices
 
 ! tabulate parent basis at quadrature points
       do iln = 1, size(xin)
@@ -292,9 +292,9 @@ contains
          uq(:, ie) = 0
          do iln = 1, size(xin)
             if (ie == 1) then
-               uq(:, ie) = uq(:, ie) + fullu(in(iln, ie))*phihq1(:, iln)
+               uq(:, ie) = uq(:, ie) + fullu(in(iln, ie)) * phihq1(:, iln)
             else
-               uq(:, ie) = uq(:, ie) + fullu(in(iln, ie))*phihq(:, iln)
+               uq(:, ie) = uq(:, ie) + fullu(in(iln, ie)) * phihq(:, iln)
             end if
          end do
       end do
@@ -302,10 +302,10 @@ contains
 
    subroutine c2fullc(in, ib, c, fullc)
 ! Converts FE coefficient vector to full coefficient vector
-      integer, intent(in) :: in(:, :, :)   ! nodal connectivity: in(i,j) = index of basis
+      integer, intent(in) :: in(:, :, :) ! nodal connectivity: in(i,j) = index of basis
       ! node
       ! corresponding to local node i of element j
-      integer, intent(in) :: ib(:, :, :)   ! basis connectivity: ib(i,j) = index of basis
+      integer, intent(in) :: ib(:, :, :) ! basis connectivity: ib(i,j) = index of basis
       ! function associated with local basis function i of element j. 0 = no
       ! associated basis fn.
       real(dp), intent(in) :: c(:) ! coefficient vector with regards to ib
@@ -329,10 +329,10 @@ contains
 ! Converts FE coefficient vector to full coefficient vector
 ! It puts 0 for Dirichlet boundary conditions (ib==0), otherwise it just copies
 ! the coefficients.
-      integer, intent(in) :: in(:, :)   ! nodal connectivity: in(i,j) = index of basis
+      integer, intent(in) :: in(:, :) ! nodal connectivity: in(i,j) = index of basis
       ! node
       ! corresponding to local node i of element j
-      integer, intent(in) :: ib(:, :)   ! basis connectivity: ib(i,j) = index of basis
+      integer, intent(in) :: ib(:, :) ! basis connectivity: ib(i,j) = index of basis
       ! function associated with local basis function i of element j. 0 = no
       ! associated basis fn.
       real(dp), intent(in) :: c(:) ! coefficient vector with regards to ib
@@ -353,15 +353,15 @@ contains
 ! Evaluates the FE solution (fullu) on a grid.
 ! fullu is a full FE coefficient vector, having values for all nodes in the mesh,
 ! including domain-boundary nodes.
-      real(dp), intent(in):: xe(:)     ! elements: xe(i/i+1) = coord of left/right boundary of ith element
-      real(dp), intent(in):: xin(:)    ! parent basis nodes: xin(i) = coordinate of ith parent basis node
-      real(dp), intent(in):: xn(:)     ! basis nodes: xn(i) = coordinate of ith basis node
-      integer, intent(in):: in(:, :)    ! nodal connectivity: in(i,j) = index of basis node
+      real(dp), intent(in) :: xe(:) ! elements: xe(i/i+1) = coord of left/right boundary of ith element
+      real(dp), intent(in) :: xin(:) ! parent basis nodes: xin(i) = coordinate of ith parent basis node
+      real(dp), intent(in) :: xn(:) ! basis nodes: xn(i) = coordinate of ith basis node
+      integer, intent(in) :: in(:, :) ! nodal connectivity: in(i,j) = index of basis node
       ! corresponding to local node i of element j
-      real(dp), intent(in):: fullu(:, :)  ! FE coefficient representatin of fullu: full vector, including
+      real(dp), intent(in) :: fullu(:, :) ! FE coefficient representatin of fullu: full vector, including
       ! values for domain-boundary nodes / basis functions
-      real(dp), intent(in):: xout(:)   ! grid points to evaluate the solution at
-      real(dp), intent(out):: yout(:, :)  ! values of the solution at 'xout'
+      real(dp), intent(in) :: xout(:) ! grid points to evaluate the solution at
+      real(dp), intent(out) :: yout(:, :) ! values of the solution at 'xout'
       real(dp) :: phihx(size(xin)) ! parent basis fn values at a point
       integer :: p, n, e, i, j
       real(dp) :: x, xa, xb, xi
@@ -375,30 +375,30 @@ contains
          ! get parent coordinates xi
          xa = xe(e)
          xb = xe(e + 1)
-         xi = (x - xa)/(xb - xa)*2 - 1
+         xi = (x - xa) / (xb - xa) * 2 - 1
          ! get parent basis values at xi
          do n = 1, p + 1
             phihx(n) = phih(xin, n, xi)
          end do
          ! get eigenfunction value at x
          do j = 1, size(fullu, 2)
-            yout(i, j) = sum(fullu(in(:, e), j)*phihx)
+            yout(i, j) = sum(fullu(in(:, e), j) * phihx)
          end do
       end do
    end subroutine
 
    subroutine getElement(xn, p, x, e)
 ! returns element containing point x, at or after element e
-      real(dp), intent(in):: xn(:)  ! basis nodes: xn(i) = coordinate of ith basis node
-      integer, intent(in):: p       ! order of FE/SE basis
-      real(dp), intent(in):: x      ! point x
-      integer, intent(inout):: e    ! input: index of element to start search
+      real(dp), intent(in) :: xn(:) ! basis nodes: xn(i) = coordinate of ith basis node
+      integer, intent(in) :: p ! order of FE/SE basis
+      real(dp), intent(in) :: x ! point x
+      integer, intent(inout) :: e ! input: index of element to start search
       ! output: index of element containing x, at or after element e
-      integer Ne                 ! number of elements
-      Ne = (size(xn) - 1)/p
+      integer Ne ! number of elements
+      Ne = (size(xn) - 1) / p
       if (e < 1 .or. e > Ne) e = 1
       do
-         if (x >= xn((e - 1)*p + 1) .and. x <= xn(e*p + 1)) exit
+         if (x >= xn((e - 1) * p + 1) .and. x <= xn(e * p + 1)) exit
          e = e + 1
          if (e > Ne) error stop "getElement error: x not in mesh."
       end do
@@ -408,14 +408,14 @@ contains
 ! L2 projects a function `uq` defined on a quadrature onto the FE basis.
 ! Then it evaluates the values of the result on a new quadrature grid xiq2.
       integer, intent(in) :: p
-      real(dp), intent(in) :: xe(:)     ! elements: xe(i/i+1) = coord of left/right boundary of ith element
-      real(dp), intent(in) :: xiq(:), wtq(:)    ! quadrature points and weights
+      real(dp), intent(in) :: xe(:) ! elements: xe(i/i+1) = coord of left/right boundary of ith element
+      real(dp), intent(in) :: xiq(:), wtq(:) ! quadrature points and weights
       real(dp), intent(in) :: xiq2(:)
-      real(dp), intent(in) :: uq(:, :)  ! FE coefficient representatin of fullu: full vector, including
+      real(dp), intent(in) :: uq(:, :) ! FE coefficient representatin of fullu: full vector, including
       real(dp), intent(out) :: uq2(:, :)
       real(dp) phihq(size(xiq), p + 1) ! parent basis fn values at quadrature points:
       ! phihq(i,j) = value of jth function at ith quadrature point
-      integer :: ie, iln, iq                 ! element, local node, quad point indices
+      integer :: ie, iln, iq ! element, local node, quad point indices
       integer :: i, j, Ne, dofs
       real(dp) :: xin(p + 1), al, be, jac, xa, xb
       real(dp), allocatable :: A(:, :), f(:), x(:)
@@ -445,14 +445,14 @@ contains
       f = 0
       do ie = 1, Ne ! sum over elements
          xa = xe(ie); xb = xe(ie + 1)
-         al = (xb - xa)/2; be = (xb + xa)/2
+         al = (xb - xa) / 2; be = (xb + xa) / 2
          jac = al
          do i = 1, p + 1
             do j = 1, p + 1
                A(in(i, ie), in(j, ie)) = A(in(i, ie), in(j, ie)) + &
-                                         sum(wtq*phihq(:, i)*phihq(:, j)*jac)
+                                         sum(wtq * phihq(:, i) * phihq(:, j) * jac)
             end do
-            f(in(i, ie)) = f(in(i, ie)) + sum(wtq*phihq(:, i)*uq(:, ie)*jac)
+            f(in(i, ie)) = f(in(i, ie)) + sum(wtq * phihq(:, i) * uq(:, ie) * jac)
          end do
       end do
 ! Solve A x = f
@@ -463,14 +463,14 @@ contains
    function calc_proj_error(p, xe, xiq, wtq, uq) result(error)
 ! Calculates the L2 error of the projected solution on the mesh "p"
       integer, intent(in) :: p
-      real(dp), intent(in):: xe(:)     ! elements: xe(i/i+1) = coord of left/right boundary of ith element
-      real(dp), intent(in):: xiq(:), wtq(:)    ! quadrature points and weights
-      real(dp), intent(in):: uq(:, :)  ! FE coefficient representatin of fullu: full vector, including
+      real(dp), intent(in) :: xe(:) ! elements: xe(i/i+1) = coord of left/right boundary of ith element
+      real(dp), intent(in) :: xiq(:), wtq(:) ! quadrature points and weights
+      real(dp), intent(in) :: uq(:, :) ! FE coefficient representatin of fullu: full vector, including
       real(dp) :: error(size(xe) - 1) ! errors for each element
       ! values for domain-boundary nodes / basis functions
       real(dp) phihq(size(xiq), p + 1) ! parent basis fn values at quadrature points:
       ! phihq(i,j) = value of jth function at ith quadrature point
-      integer :: ie, iln, iq                 ! element, local node, quad point indices
+      integer :: ie, iln, iq ! element, local node, quad point indices
       integer :: i, j, Ne, dofs
       real(dp) :: xin(p + 1), al, be, jac, xa, xb, norm
       real(dp), allocatable :: A(:, :), f(:), x(:), xn(:)
@@ -485,7 +485,7 @@ contains
       Ne = size(xe) - 1
 
 ! define basis
-      allocate (xn(Ne*p + 1))
+      allocate (xn(Ne * p + 1))
       call get_nodes(xe, xin, xn)
 
       allocate (in(p + 1, Ne), ib(p + 1, Ne))
@@ -506,14 +506,14 @@ contains
       f = 0
       do ie = 1, Ne ! sum over elements
          xa = xe(ie); xb = xe(ie + 1)
-         al = (xb - xa)/2; be = (xb + xa)/2
+         al = (xb - xa) / 2; be = (xb + xa) / 2
          jac = al
          do i = 1, p + 1
             do j = 1, p + 1
                A(in(i, ie), in(j, ie)) = A(in(i, ie), in(j, ie)) + &
-                                         sum(wtq*phihq(:, i)*phihq(:, j)*jac)
+                                         sum(wtq * phihq(:, i) * phihq(:, j) * jac)
             end do
-            f(in(i, ie)) = f(in(i, ie)) + sum(wtq*phihq(:, i)*uq(:, ie)*jac)
+            f(in(i, ie)) = f(in(i, ie)) + sum(wtq * phihq(:, i) * uq(:, ie) * jac)
          end do
       end do
 ! Solve A x = f
@@ -522,14 +522,14 @@ contains
       norm = 0
       do ie = 1, Ne ! sum over elements
          xa = xe(ie); xb = xe(ie + 1)
-         al = (xb - xa)/2; be = (xb + xa)/2
+         al = (xb - xa) / 2; be = (xb + xa) / 2
          jac = al
          !print *, "el =", ie, sqrt(sum(wtq * abs(uq(:, ie)-projq(:, ie))**2 * jac))
-         error(ie) = sum(wtq*abs(uq(:, ie) - projq(:, ie))**2*jac)
-         norm = norm + sum(wtq*abs(uq(:, ie))**2*jac)
+         error(ie) = sum(wtq * abs(uq(:, ie) - projq(:, ie))**2 * jac)
+         norm = norm + sum(wtq * abs(uq(:, ie))**2 * jac)
       end do
       norm = sqrt(norm)
-      error = sqrt(error)/norm
+      error = sqrt(error) / norm
 !open(newunit=ff, file="proj.dat", status="replace")
 !write(ff, *) xn
 !write(ff, *) x
@@ -537,19 +537,19 @@ contains
    end function
 
    subroutine get_parent_nodes(btype, p, xin)
-      integer, intent(in):: btype    ! type of basis: 1=uniform node, 2=Lobatto node
-      integer, intent(in):: p        ! order of FE/SE basis
+      integer, intent(in) :: btype ! type of basis: 1=uniform node, 2=Lobatto node
+      integer, intent(in) :: p ! order of FE/SE basis
 ! parent basis nodes: xin(i) = coordinate of ith parent basis node:
-      real(dp), intent(out):: xin(:)
+      real(dp), intent(out) :: xin(:)
       integer i
       if (p < 1) error stop "Error: p < 1."
       if (size(xin) /= p + 1) error stop "Error: size(xin) /= p+1"
       select case (btype)
-      case (1)  ! uniform
+      case (1) ! uniform
          do i = 1, p + 1
-            xin(i) = real(i - 1, dp)/p*2 - 1
+            xin(i) = real(i - 1, dp) / p * 2 - 1
          end do
-      case (2)  ! Lobatto
+      case (2) ! Lobatto
          xin = lobatto_pts(p + 1)
       case default
          error stop "Error: invalid basis type."
@@ -560,14 +560,14 @@ contains
 ! "phi hat": nth Lagrange polynomial with nodes xin at point xi.
 ! Value equals to 1 for xi=xin(n) and zero for all other nodes.
       real(dp), intent(in) :: xin(:) ! polynomial nodes
-      integer, intent(in) :: n       ! polynomial index
-      real(dp), intent(in) :: xi     ! point at which to evaluate phih
+      integer, intent(in) :: n ! polynomial index
+      real(dp), intent(in) :: xi ! point at which to evaluate phih
       integer :: i
 ! compute nth polynomial: 1 at node n, 0 at all others
       phih = 1
       do i = 1, size(xin)
          if (i == n) cycle
-         phih = phih*(xi - xin(i))/(xin(n) - xin(i))
+         phih = phih * (xi - xin(i)) / (xin(n) - xin(i))
       end do
    end function
 
@@ -575,23 +575,23 @@ contains
 ! "d phi hat": derivative of nth Lagrange polynomial with nodes 'xin' at point
 ! 'xi'.
       real(dp), intent(in) :: xin(:) ! polynomial nodes
-      integer, intent(in) :: n       ! polynomial index
-      real(dp), intent(in) :: xi     ! point at which to evaluate dphih
+      integer, intent(in) :: n ! polynomial index
+      real(dp), intent(in) :: xi ! point at which to evaluate dphih
       real(dp) :: term
       real(dp) :: tmp(size(xin))
       integer :: i, j
       do i = 1, size(xin)
          if (i == n) cycle
-         tmp(i) = (xi - xin(i))/(xin(n) - xin(i))
+         tmp(i) = (xi - xin(i)) / (xin(n) - xin(i))
       end do
 ! compute derivative of nth polynomial
       dphih = 0
       do j = 1, size(xin)
          if (j == n) cycle
-         term = 1/(xin(n) - xin(j))
+         term = 1 / (xin(n) - xin(j))
          do i = 1, size(xin)
             if (i == n .or. i == j) cycle
-            term = term*tmp(i)
+            term = term * tmp(i)
          end do
          dphih = dphih + term
       end do
@@ -601,15 +601,15 @@ contains
 ! "phi hat": nth Lagrange polynomial with nodes xin at point xi.
 ! Value equals to 1 for xi=xin(n) and zero for all other nodes.
       real(dp), intent(in) :: xin(:) ! polynomial nodes
-      integer, intent(in) :: n       ! polynomial index
-      real(dp), intent(in) :: xi(:)  ! point at which to evaluate phih
+      integer, intent(in) :: n ! polynomial index
+      real(dp), intent(in) :: xi(:) ! point at which to evaluate phih
       real(dp), intent(out) :: xo(:) ! output
       integer :: i
 ! compute nth polynomial: 1 at node n, 0 at all others
       xo = 1
       do i = 1, size(xin)
          if (i == n) cycle
-         xo = xo*(xi - xin(i))/(xin(n) - xin(i))
+         xo = xo * (xi - xin(i)) / (xin(n) - xin(i))
       end do
    end subroutine
 
@@ -617,8 +617,8 @@ contains
 ! "d phi hat": derivative of nth Lagrange polynomial with nodes 'xin' at point
 ! 'xi'.
       real(dp), intent(in) :: xin(:) ! polynomial nodes
-      integer, intent(in) :: n       ! polynomial index
-      real(dp), intent(in) :: xi(:)  ! points at which to evaluate dphih
+      integer, intent(in) :: n ! polynomial index
+      real(dp), intent(in) :: xi(:) ! points at which to evaluate dphih
       real(dp), intent(out) :: xo(:) ! output
       real(dp) :: prod(size(xi), size(xin)), prod2(size(xi), size(xin))
       real(dp) :: tmp(size(xi), size(xin))
@@ -627,25 +627,25 @@ contains
          if (i == n) then
             tmp(:, i) = 1
          else
-            tmp(:, i) = (xi - xin(i))/(xin(n) - xin(i))
+            tmp(:, i) = (xi - xin(i)) / (xin(n) - xin(i))
          end if
          if (i == 1) then
             prod(:, i) = 1
          else
-            prod(:, i) = prod(:, i - 1)*tmp(:, i - 1)
+            prod(:, i) = prod(:, i - 1) * tmp(:, i - 1)
          end if
       end do
 
       prod2(:, size(xin)) = 1
       do i = size(xin) - 1, 1, -1
-         prod2(:, i) = prod2(:, i + 1)*tmp(:, i + 1)
+         prod2(:, i) = prod2(:, i + 1) * tmp(:, i + 1)
       end do
 
 ! compute derivative of nth polynomial
       xo = 0
       do j = 1, size(xin)
          if (j == n) cycle
-         xo = xo + prod(:, j)*prod2(:, j)/(xin(n) - xin(j))
+         xo = xo + prod(:, j) * prod2(:, j) / (xin(n) - xin(j))
       end do
    end subroutine
 
@@ -655,14 +655,14 @@ contains
 ! point 'xi'. 2nd derivates have delta functions at element boundaries and cannot
 ! be used in Finite Element basis.
       real(dp), intent(in) :: xin(:) ! polynomial nodes
-      integer, intent(in) :: n       ! polynomial index
-      real(dp), intent(in) :: xi     ! point at which to evaluate dphih
+      integer, intent(in) :: n ! polynomial index
+      real(dp), intent(in) :: xi ! point at which to evaluate dphih
       real(dp) :: term
       real(dp) :: tmp(size(xin))
       integer :: i, j, k
       do i = 1, size(xin)
          if (i == n) cycle
-         tmp(i) = (xi - xin(i))/(xin(n) - xin(i))
+         tmp(i) = (xi - xin(i)) / (xin(n) - xin(i))
       end do
 ! compute derivative of nth polynomial
       ddphih = 0
@@ -670,10 +670,10 @@ contains
          if (k == n) cycle
          do j = 1, size(xin)
             if (j == k .or. j == n) cycle
-            term = 1/((xin(n) - xin(j))*(xin(n) - xin(k)))
+            term = 1 / ((xin(n) - xin(j)) * (xin(n) - xin(k)))
             do i = 1, size(xin)
                if (i == n .or. i == j .or. i == k) cycle
-               term = term*tmp(i)
+               term = term * tmp(i)
             end do
             ddphih = ddphih + term
          end do
@@ -689,8 +689,8 @@ contains
       do e = 1, size(xe) - 1
          xa = xe(e)
          xb = xe(e + 1)
-         jac = (xb - xa)/2  ! affine mapping
-         r = r + sum(uq(:, e)*wtq*jac)
+         jac = (xb - xa) / 2 ! affine mapping
+         r = r + sum(uq(:, e) * wtq * jac)
       end do
    end function
 
@@ -706,12 +706,12 @@ contains
       do e = 1, size(xe) - 1
          xa = xe(e)
          xb = xe(e + 1)
-         jac = (xb - xa)/2  ! affine mapping
-         xq = (xiq_gj + 1)*jac
+         jac = (xb - xa) / 2 ! affine mapping
+         xq = (xiq_gj + 1) * jac
          if (e == 1 .and. zeta > -1) then
-            r = r + sum(uq(:, e)*xq**(-zeta)*jac**zeta*wtq_gj*jac)
+            r = r + sum(uq(:, e) * xq**(-zeta) * jac**zeta * wtq_gj * jac)
          else
-            r = r + sum(uq(:, e)*wtq*jac)
+            r = r + sum(uq(:, e) * wtq * jac)
          end if
       end do
    end function

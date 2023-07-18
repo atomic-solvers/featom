@@ -78,12 +78,12 @@ contains
       do kappa = Lmin, Lmax
          if (kappa == 0) cycle
          ! asymptotic at r = 0
-         asympt = sqrt(kappa**2 - Z**2/c**2)
+         asympt = sqrt(kappa**2 - Z**2 / c**2)
          ! solve for P/r**alpha
          if (alpha_int == -1) then
             alpha(kappa) = asympt
             ! power of r for Gauss-Jacobi quadrature
-            alpha_j(kappa) = 2*asympt - 2
+            alpha_j(kappa) = 2 * asympt - 2
          else
             alpha(kappa) = alpha_int
             ! don't use Gauss-Jacobi quadrature

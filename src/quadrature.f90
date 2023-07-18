@@ -7,14 +7,14 @@ module quadrature
    public gauss_pts, gauss_wts, max_gauss_pts, lobatto_pts, lobatto_wts, &
       max_lobatto_pts
 
-   integer, parameter:: max_gauss_pts = 64, max_lobatto_pts = 64
+   integer, parameter :: max_gauss_pts = 64, max_lobatto_pts = 64
 
 contains
 
    function gauss_pts(n)
 ! returns Gauss points for n-point quadrature
-      integer, intent(in):: n ! number of Gauss points
-      real(dp) gauss_pts(n)    ! Gauss points for n-point quadrature
+      integer, intent(in) :: n ! number of Gauss points
+      real(dp) gauss_pts(n) ! Gauss points for n-point quadrature
       real(dp) xi(n)
       select case (n)
       case (1)
@@ -3071,8 +3071,8 @@ contains
 
    function gauss_wts(n)
 ! returns Gauss weights for n-point quadrature
-      integer, intent(in):: n ! number of Gauss weights
-      real(dp) gauss_wts(n)    ! Gauss weights for n-point quadrature
+      integer, intent(in) :: n ! number of Gauss weights
+      real(dp) gauss_wts(n) ! Gauss weights for n-point quadrature
       real(dp) w(n)
       select case (n)
       case (1)
@@ -6129,8 +6129,8 @@ contains
 
    function lobatto_pts(n)
 ! returns Lobatto points for n-point quadrature (n>=2)
-      integer, intent(in):: n ! number of Lobatto points
-      real(dp) lobatto_pts(n)  ! Lobatto points for n-point quadrature
+      integer, intent(in) :: n ! number of Lobatto points
+      real(dp) lobatto_pts(n) ! Lobatto points for n-point quadrature
       real(dp) xi(n)
       select case (n)
       case (2)
@@ -8286,8 +8286,8 @@ contains
 
    function lobatto_wts(n)
 ! returns Lobatto weights for n-point quadrature
-      integer, intent(in):: n ! number of Lobatto weights
-      real(dp) lobatto_wts(n)  ! Lobatto weights for n-point quadrature
+      integer, intent(in) :: n ! number of Lobatto weights
+      real(dp) lobatto_wts(n) ! Lobatto weights for n-point quadrature
       real(dp) w(n)
       select case (n)
       case (2)

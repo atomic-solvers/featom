@@ -9,13 +9,13 @@ program test_coulomb_dirac
    use schroed_dirac_solver, only: total_energy
    implicit none
 
-   real(dp), allocatable :: xe(:)              ! element coordinates
-   real(dp), allocatable :: xiq(:), wtq(:)     ! quadrature points and weights
+   real(dp), allocatable :: xe(:) ! element coordinates
+   real(dp), allocatable :: xiq(:), wtq(:) ! quadrature points and weights
    integer :: p, Ne, Nq, Z, i, DOFs
    real(dp) :: rmin, rmax, a, err, Etot
    real(dp), allocatable :: energies(:), xq(:, :), eigfn(:, :, :)
    real(dp) :: Etot_ref
-   real(dp), allocatable  :: energies_ref(:)
+   real(dp), allocatable :: energies_ref(:)
 ! <study_type> can be,
 !       0: error as p is varied
 !       1: error as rmax is varied
@@ -82,12 +82,12 @@ program test_coulomb_dirac
    do kappa = Lmin, Lmax
       if (kappa == 0) cycle
       ! asymptotic at r = 0
-      asympt = sqrt(kappa**2 - Z**2/c**2)
+      asympt = sqrt(kappa**2 - Z**2 / c**2)
       ! solve for P/r**alpha
       if (alpha_int == -1) then
          alpha(kappa) = asympt
          ! power of r for Gauss-Jacobi quadrature
-         alpha_j(kappa) = 2*asympt - 2
+         alpha_j(kappa) = 2 * asympt - 2
       else
          alpha(kappa) = alpha_int
          ! don't use Gauss-Jacobi quadrature
@@ -138,10 +138,10 @@ program test_coulomb_dirac
 
    print "(i3, f6.1, i5, f8.1, i3, i3, i5, f22.12)", Z, rmax, Ne, a, p, Nq, &
       DOFs, Etot
-   print *
-   print *, "Comparison of calculated and reference energies"
-   print *
-   print *, "Total energy:"
+   print*
+   print*,"Comparison of calculated and reference energies"
+   print*
+   print*,"Total energy:"
    print "(a20,a20,a10)", "E", "E_ref", "error"
    err = abs(Etot - Etot_ref)
    print "(f20.12, f20.12, es10.2)", Etot, Etot_ref, err
@@ -149,7 +149,7 @@ program test_coulomb_dirac
       error stop 'assert failed'
    end if
 
-   print *, "Eigenvalues:"
+   print*,"Eigenvalues:"
    print "(a4,a20,a20,a10)", "n", "E", "E_ref", "error"
    do i = 1, size(energies)
       err = abs(energies(i) - energies_ref(i))
@@ -159,7 +159,7 @@ program test_coulomb_dirac
       end if
    end do
 
-   print *, "Eigenfunctions saved in data_coulomb_dirac.txt"
+   print*,"Eigenfunctions saved in data_coulomb_dirac.txt"
    open (newunit=u, file="data_coulomb_dirac.txt", status="replace")
    write (u, *) xq
    do i = 1, size(energies)
@@ -184,15 +184,15 @@ contains
       if (.not. (n > l)) error stop "'n' must be greater than 'l'"
       if (l == 0 .and. relat == 3) error stop "Spin must be up for l==0."
       if (relat == 0) then
-         E_nl = -Z**2/(2.0_dp*n**2)
+         E_nl = -Z**2 / (2.0_dp * n**2)
       else
          if (relat == 2) then
             kappa = -l - 1
          else
             kappa = l
          end if
-         beta = sqrt(kappa**2 - (Z/c)**2)
-         E_nl = c**2/sqrt(1 + (Z/c)**2/(n - abs(kappa) + beta)**2) - c**2
+         beta = sqrt(kappa**2 - (Z / c)**2)
+         E_nl = c**2 / sqrt(1 + (Z / c)**2 / (n - abs(kappa) + beta)**2) - c**2
       end if
    end function
 

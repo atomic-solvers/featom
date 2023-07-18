@@ -18,7 +18,7 @@ module constants
    real(dp), parameter :: e_ = 2.7182818284590452353602874713527_dp
    complex(dp), parameter :: i_ = (0, 1)
 
-   real(dp), parameter :: Ha2eV_2010 = 27.21138505_dp    ! 1 Ha = (1 * Ha2eV) eV
+   real(dp), parameter :: Ha2eV_2010 = 27.21138505_dp ! 1 Ha = (1 * Ha2eV) eV
 ! Standard uncertainty:      0.000000000053 eV (Source: 2010 CODATA)
 
 ! speed of light in atomic units  --> inverse fine-structure constant

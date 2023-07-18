@@ -47,16 +47,16 @@ contains
       if (a < 0) then
          error stop "meshexp: a > 0 required"
       else if (abs(a - 1) < tiny(1._dp)) then
-         alpha = (rmax - rmin)/N
+         alpha = (rmax - rmin) / N
          do i = 1, N + 1
-            mesh(i) = alpha*(i - 1.0_dp) + rmin
+            mesh(i) = alpha * (i - 1.0_dp) + rmin
          end do
       else
          if (N > 1) then
-            beta = log(a)/(N - 1)
-            alpha = (rmax - rmin)/(exp(beta*N) - 1)
+            beta = log(a) / (N - 1)
+            alpha = (rmax - rmin) / (exp(beta * N) - 1)
             do i = 1, N + 1
-               mesh(i) = alpha*(exp(beta*(i - 1)) - 1) + rmin
+               mesh(i) = alpha * (exp(beta * (i - 1)) - 1) + rmin
             end do
          else if (N == 1) then
             mesh(1) = rmin
@@ -96,10 +96,10 @@ contains
          error stop "meshexp_der: a == 1 not implemented"
       else
          if (N > 1) then
-            beta = log(a)/(N - 1)
-            alpha = (rmax - rmin)/(exp(beta*N) - 1)
+            beta = log(a) / (N - 1)
+            alpha = (rmax - rmin) / (exp(beta * N) - 1)
             do i = 1, N + 1
-               Rp(i) = alpha*beta*exp(beta*(i - 1))
+               Rp(i) = alpha * beta * exp(beta * (i - 1))
             end do
          else
             error stop "meshexp_der: N > 1 required"
@@ -136,10 +136,10 @@ contains
          error stop "meshexp_der2: a == 1 not implemented"
       else
          if (N > 1) then
-            beta = log(a)/(N - 1)
-            alpha = (rmax - rmin)/(exp(beta*N) - 1)
+            beta = log(a) / (N - 1)
+            alpha = (rmax - rmin) / (exp(beta * N) - 1)
             do i = 1, N + 1
-               Rpp(i) = alpha*beta**2*exp(beta*(i - 1))
+               Rpp(i) = alpha * beta**2 * exp(beta * (i - 1))
             end do
          else
             error stop "meshexp_der2: N > 1 required"
@@ -164,7 +164,7 @@ contains
       integer, intent(out) :: N
       rmin = R(1)
       rmax = R(size(R))
-      a = (R(size(R)) - R(size(R) - 1))/(R(2) - R(1))
+      a = (R(size(R)) - R(size(R) - 1)) / (R(2) - R(1))
       N = size(R) - 1
    end subroutine
 

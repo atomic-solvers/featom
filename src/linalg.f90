@@ -17,10 +17,10 @@ contains
       ! solves generalized eigen value problem for all eigenvalues and eigenvectors
       ! Am must by symmetric, Bm symmetric positive definite.
       ! Only the lower triangular part of Am and Bm is used.
-      real(dp), intent(in) :: Am(:, :)   ! LHS matrix: Am c = lam Bm c
-      real(dp), intent(in) :: Bm(:, :)   ! RHS matrix: Am c = lam Bm c
-      real(dp), intent(out) :: lam(:)   ! eigenvalues: Am c = lam Bm c
-      real(dp), intent(out) :: c(:, :)   ! eigenvectors: Am c = lam Bm c; c(i,j) = ith component of jth vec.
+      real(dp), intent(in) :: Am(:, :) ! LHS matrix: Am c = lam Bm c
+      real(dp), intent(in) :: Bm(:, :) ! RHS matrix: Am c = lam Bm c
+      real(dp), intent(out) :: lam(:) ! eigenvalues: Am c = lam Bm c
+      real(dp), intent(out) :: c(:, :) ! eigenvectors: Am c = lam Bm c; c(i,j) = ith component of jth vec.
       integer :: n
       ! lapack variables
       integer :: lwork, liwork, info
@@ -32,21 +32,21 @@ contains
       call assert_shape(Am, [n, n], "eigh", "Am")
       call assert_shape(Bm, [n, n], "eigh", "B")
       call assert_shape(c, [n, n], "eigh", "c")
-      lwork = 1 + 6*n + 2*n**2
-      liwork = 3 + 5*n
+      lwork = 1 + 6 * n + 2 * n**2
+      liwork = 3 + 5 * n
       allocate (Bmt(n, n), work(lwork), iwork(liwork))
-      c = Am; Bmt = Bm  ! Bmt temporaries overwritten by dsygvd
+      c = Am; Bmt = Bm ! Bmt temporaries overwritten by dsygvd
       call dsygvd(1, 'V', 'L', n, c, n, Bmt, n, lam, work, lwork, iwork, liwork, info)
       if (info /= 0) then
-         print *, "dsygvd returned info =", info
+         print*,"dsygvd returned info =", info
          if (info < 0) then
-            print *, "the", -info, "-th argument had an illegal value"
+            print*,"the", -info, "-th argument had an illegal value"
          else if (info <= n) then
-            print *, "the algorithm failed to compute an eigenvalue while working"
-            print *, "on the submatrix lying in rows and columns", 1.0_dp*info/(n + 1)
-            print *, "through", mod(info, n + 1)
+            print*,"the algorithm failed to compute an eigenvalue while working"
+            print*,"on the submatrix lying in rows and columns", 1.0_dp * info / (n + 1)
+            print*,"through", mod(info, n + 1)
          else
-            print *, "The leading minor of order ", info - n, &
+            print*,"The leading minor of order ", info - n, &
                "of B is not positive definite. The factorization of B could ", &
                "not be completed and no eigenvalues or eigenvectors were computed."
          end if
@@ -58,9 +58,9 @@ contains
       ! solves generalized eigen value problem for all eigenvalues
       ! Am must by symmetric, Bm symmetric positive definite.
       ! Only the upper triangular part of Am and Bm is used.
-      real(dp), intent(in) :: Am(:, :)   ! LHS matrix: Am c = lam Bm c
-      real(dp), intent(in) :: Bm(:, :)   ! RHS matrix: Am c = lam Bm c
-      real(dp), intent(out) :: lam(:)   ! eigenvalues: Am c = lam Bm c
+      real(dp), intent(in) :: Am(:, :) ! LHS matrix: Am c = lam Bm c
+      real(dp), intent(in) :: Bm(:, :) ! RHS matrix: Am c = lam Bm c
+      real(dp), intent(out) :: lam(:) ! eigenvalues: Am c = lam Bm c
       integer :: n
       ! lapack variables
       integer :: lwork, liwork, info
@@ -72,21 +72,21 @@ contains
       n = size(Am, 1)
       call assert_shape(Am, [n, n], "eigh", "Am")
       call assert_shape(Bm, [n, n], "eigh", "B")
-      lwork = 1 + 2*n
+      lwork = 1 + 2 * n
       liwork = 1
       allocate (work(lwork), iwork(liwork))
-      c = Am; Bmt = Bm  ! Bmt temporaries overwritten by dsygvd
+      c = Am; Bmt = Bm ! Bmt temporaries overwritten by dsygvd
       call dsygvd(1, 'N', 'U', n, c, n, Bmt, n, lam, work, lwork, iwork, liwork, info)
       if (info /= 0) then
-         print *, "dsygvd returned info =", info
+         print*,"dsygvd returned info =", info
          if (info < 0) then
-            print *, "the", -info, "-th argument had an illegal value"
+            print*,"the", -info, "-th argument had an illegal value"
          else if (info <= n) then
-            print *, " the algorithm failed to converge; "
-            print *, info, " off-diagonal elements of an intermediate tridiagonal form "
-            print *, "did not converge to zero"
+            print*," the algorithm failed to converge; "
+            print*,info, " off-diagonal elements of an intermediate tridiagonal form "
+            print*,"did not converge to zero"
          else
-            print *, "The leading minor of order ", info - n, &
+            print*,"The leading minor of order ", info - n, &
                "of B is not positive definite. The factorization of B could ", &
                "not be completed and no eigenvalues or eigenvectors were computed."
          end if
@@ -98,9 +98,9 @@ contains
       ! solves eigen value problem for all eigenvalues and eigenvectors
       ! Am must by symmetric
       ! Only the lower triangular part of Am is used.
-      real(dp), intent(in) :: Am(:, :)   ! LHS matrix: Am c = lam c
-      real(dp), intent(out) :: lam(:)   ! eigenvalues: Am c = lam c
-      real(dp), intent(out) :: c(:, :)   ! eigenvectors: Am c = lam c; c(i,j) = ith component of jth vec.
+      real(dp), intent(in) :: Am(:, :) ! LHS matrix: Am c = lam c
+      real(dp), intent(out) :: lam(:) ! eigenvalues: Am c = lam c
+      real(dp), intent(out) :: c(:, :) ! eigenvectors: Am c = lam c; c(i,j) = ith component of jth vec.
       integer :: n
       ! lapack variables
       integer :: lwork, liwork, info
@@ -111,19 +111,19 @@ contains
       n = size(Am, 1)
       call assert_shape(Am, [n, n], "eigh", "Am")
       call assert_shape(c, [n, n], "eigh", "c")
-      lwork = 1 + 6*n + 2*n**2
-      liwork = 3 + 5*n
+      lwork = 1 + 6 * n + 2 * n**2
+      liwork = 3 + 5 * n
       allocate (work(lwork), iwork(liwork))
       c = Am
       call dsyevd('V', 'L', n, c, n, lam, work, lwork, iwork, liwork, info)
       if (info /= 0) then
-         print *, "dsyevd returned info =", info
+         print*,"dsyevd returned info =", info
          if (info < 0) then
-            print *, "the", -info, "-th argument had an illegal value"
+            print*,"the", -info, "-th argument had an illegal value"
          else
-            print *, "the algorithm failed to compute an eigenvalue while working"
-            print *, "on the submatrix lying in rows and columns", 1.0_dp*info/(n + 1)
-            print *, "through", mod(info, n + 1)
+            print*,"the algorithm failed to compute an eigenvalue while working"
+            print*,"on the submatrix lying in rows and columns", 1.0_dp * info / (n + 1)
+            print*,"through", mod(info, n + 1)
          end if
          error stop 'eigh: dsyevd error'
       end if
@@ -131,8 +131,8 @@ contains
 
    function solve(A, b) result(x)
       ! solves a system of equations A x = b with one right hand side
-      real(dp), intent(in) :: A(:, :)  ! coefficient matrix A
-      real(dp), intent(in) :: b(:)  ! right-hand-side A x = b
+      real(dp), intent(in) :: A(:, :) ! coefficient matrix A
+      real(dp), intent(in) :: b(:) ! right-hand-side A x = b
       real(dp), allocatable :: x(:)
       ! LAPACK variables:
       real(dp), allocatable :: At(:, :), bt(:, :)
@@ -140,20 +140,20 @@ contains
       integer, allocatable :: ipiv(:)
 
       n = size(A(1, :))
-      lda = size(A(:, 1))  ! TODO: remove lda (which is = n!)
+      lda = size(A(:, 1)) ! TODO: remove lda (which is = n!)
       call assert_shape(A, [n, n], "solve", "A")
       allocate (At(lda, n), bt(n, 1), ipiv(n), x(n))
       At = A
       bt(:, 1) = b(:)
       call dgesv(n, 1, At, lda, ipiv, bt, n, info)
       if (info /= 0) then
-         print *, "dgesv returned info =", info
+         print*,"dgesv returned info =", info
          if (info < 0) then
-            print *, "the", -info, "-th argument had an illegal value"
+            print*,"the", -info, "-th argument had an illegal value"
          else
-            print *, "U(", info, ",", info, ") is exactly zero; The factorization"
-            print *, "has been completed, but the factor U is exactly"
-            print *, "singular, so the solution could not be computed."
+            print*,"U(", info, ",", info, ") is exactly zero; The factorization"
+            print*,"has been completed, but the factor U is exactly"
+            print*,"singular, so the solution could not be computed."
          end if
          error stop 'inv: dgesv error'
       end if
@@ -167,8 +167,8 @@ contains
       character(len=*) :: routine, matname
 
       if (any(shape(A) /= shap)) then
-         print *, "In routine "//routine//" matrix "//matname//" has illegal shape ", shape(A)
-         print *, "Shape should be ", shap
+         print*,"In routine "//routine//" matrix "//matname//" has illegal shape ", shape(A)
+         print*,"Shape should be ", shap
          error stop "Aborting due to illegal matrix operation"
       end if
    end subroutine assert_shape

@@ -72,7 +72,7 @@ contains
          ! L2 norm of the "output-input" potential:
          R_i_norm = sqrt(integral(R_i**2))
          if (x_i_norm < 1e-12_dp) x_i_norm = 1e-12_dp
-         L2_err = R_i_norm/x_i_norm
+         L2_err = R_i_norm / x_i_norm
          err = maxval(abs(energies - old_energies))
          ! Do at least 3 iterations
          if (i >= 3 .and. L2_err < L2_eps) then
@@ -84,7 +84,7 @@ contains
          old_energies = energies
          err_old = err
 
-         x_i = x_i + alpha*R_i
+         x_i = x_i + alpha * R_i
       end do
       error stop "SCF didn't converge"
    end subroutine
@@ -119,7 +119,7 @@ contains
          ! L2 norm of the "output-input" potential:
          R_i_norm = sqrt(integral(R_i**2))
          if (x_i_norm < 1e-12_dp) x_i_norm = 1e-12_dp
-         L2_err = R_i_norm/x_i_norm
+         L2_err = R_i_norm / x_i_norm
          err = maxval(abs(energies - old_energies))
          ! Do at least 3 iterations
          if (i >= 3 .and. L2_err < L2_eps) then
@@ -137,12 +137,12 @@ contains
          end if
          x1_i = x_i
          R1_i = R_i
-         x_i = x_i + alpha*R_i
+         x_i = x_i + alpha * R_i
          if (i > 1) then
-            sn = integral(R_i*delta_R)
+            sn = integral(R_i * delta_R)
             sd = integral(delta_R**2)
-            beta = sn/sd
-            x_i = x_i - beta*(delta_x + alpha*delta_R)
+            beta = sn / sd
+            x_i = x_i - beta * (delta_x + alpha * delta_R)
          end if
       end do
       error stop "SCF didn't converge"
@@ -200,11 +200,11 @@ contains
          ! L2 norm of the "output-input" potential:
          f_i_norm = sqrt(integral(f_i**2))
          if (x_i_norm < 1e-12_dp) x_i_norm = 1e-12_dp
-         L2_err = f_i_norm/x_i_norm
+         L2_err = f_i_norm / x_i_norm
          err = maxval(abs(energies - old_energies))
          ! Do at least 3 iterations
          if (i >= 3 .and. L2_err < L2_eps) then
-            print *, "SCF convergence error:", err
+            print*,"SCF convergence error:", err
             if (err < eig_eps .and. err_old < eig_eps) then
                x_out = x_i
                return
@@ -220,9 +220,9 @@ contains
             end do
             FTF_inv = matmat(transpose(Fi), Fi)
             FTf = matvec(transpose(Fi), f_i)
-            x_i = x_i + alpha*f_i - matmul((Ri + alpha*Fi), solve(FTF_inv, FTf))
+            x_i = x_i + alpha * f_i - matmul((Ri + alpha * Fi), solve(FTF_inv, FTf))
          else
-            x_i = x_i + alpha*f_i
+            x_i = x_i + alpha * f_i
          end if
       end do
       error stop "SCF didn't converge"

@@ -20,26 +20,26 @@ module schroed_glob
    use lapack, only: dsytrf, dsytrs
    implicit none
    private
-   public solve_schroed!, csolve_schroed, total_energy
+   public solve_schroed !, csolve_schroed, total_energy
 
 contains
 
    subroutine solve_schroed(Z, p, xiq, wtq, xe, eps, energies, Etot, V, DOFs)
 
       integer, intent(in) :: Z, p
-      real(dp), intent(in) :: xe(:)        ! element coordinates
-      real(dp), intent(in) :: xiq(:)       ! quadrature points
-      real(dp), intent(in) :: wtq(:)       ! quadrature weights
+      real(dp), intent(in) :: xe(:) ! element coordinates
+      real(dp), intent(in) :: xiq(:) ! quadrature points
+      real(dp), intent(in) :: wtq(:) ! quadrature weights
       real(dp), intent(in) :: eps
       real(dp), allocatable, intent(out) :: energies(:)
       real(dp), intent(out) :: Etot
-      real(dp), intent(out) :: V(:, :)       ! SCF potential
+      real(dp), intent(out) :: V(:, :) ! SCF potential
       integer, intent(out) :: DOFs
       integer :: n, Nq
       real(dp), allocatable :: H(:, :), S(:), D(:, :), lam(:)
 
-      real(dp), allocatable :: xin(:)       ! parent basis nodes
-      integer, allocatable :: ib(:, :)       ! basis connectivity: ib(i,j) = index of
+      real(dp), allocatable :: xin(:) ! parent basis nodes
+      integer, allocatable :: ib(:, :) ! basis connectivity: ib(i,j) = index of
       ! basis function associated with local basis function i of element j. 0 = no
       ! associated basis fn.
       integer, allocatable :: in(:, :)
@@ -47,13 +47,13 @@ contains
                                Vxc(:, :), exc(:, :), Vin(:, :), Vout(:, :), xn(:), un(:), xq1(:, :), Am_p(:, :), &
                                bv_p(:), Hl(:, :, :)
       integer, allocatable :: ipiv(:)
-      real(dp), allocatable :: phihq(:, :)   ! parent basis at quadrature points
-      real(dp), allocatable :: dphihq(:, :)  ! parent basis derivative at quadrature points
+      real(dp), allocatable :: phihq(:, :) ! parent basis at quadrature points
+      real(dp), allocatable :: dphihq(:, :) ! parent basis derivative at quadrature points
 
-      real(dp), allocatable :: xin_p(:)       ! parent basis nodes for poisson grid
+      real(dp), allocatable :: xin_p(:) ! parent basis nodes for poisson grid
       real(dp), allocatable :: xn_p(:)
-      real(dp), allocatable :: phihq_p(:, :)   ! parent basis at quadrature points
-      real(dp), allocatable :: dphihq_p(:, :)  ! parent basis derivative at quadrature points
+      real(dp), allocatable :: phihq_p(:, :) ! parent basis at quadrature points
+      real(dp), allocatable :: dphihq_p(:, :) ! parent basis derivative at quadrature points
       integer, allocatable :: in_p(:, :), ib_p(:, :)
 
       integer :: Ne, Nb, Nn, Nb_p, Nn_p, pp
@@ -92,7 +92,7 @@ contains
 
       Lmax = ubound(focc, 2)
 
-      Nn = Ne*p + 1
+      Nn = Ne * p + 1
 
       allocate (xin(p + 1))
       call get_parent_nodes(2, p, xin)
@@ -107,8 +107,8 @@ contains
       call get_quad_pts(xe, xiq, xq)
       call get_nodes(xe, xin, xn)
 
-      pp = 2*p
-      Nn_p = Ne*pp + 1
+      pp = 2 * p
+      Nn_p = Ne * pp + 1
       allocate (xin_p(pp + 1))
       call get_parent_nodes(2, pp, xin_p)
       allocate (in_p(pp + 1, Ne), ib_p(pp + 1, Ne))
@@ -145,15 +145,15 @@ contains
       scf_L2_eps = 1e-4_dp
       scf_eig_eps = eps
 
-      allocate (tmp(Nq*Ne))
+      allocate (tmp(Nq * Ne))
       allocate (energies(nband))
-      Vin = reshape(thomas_fermi_potential(reshape(xq, [Nq*Ne]), Z), [Nq, Ne]) + &
-            Z/xq
+      Vin = reshape(thomas_fermi_potential(reshape(xq, [Nq * Ne]), Z), [Nq, Ne]) + &
+            Z / xq
       iter = 0
 
       call assemble_radial_S(xin, xe, ib, wtq_lob, S)
       do i = 1, size(S)
-         S(i) = 1/sqrt(S(i))
+         S(i) = 1 / sqrt(S(i))
       end do
 
       allocate (Am_p(Nb_p, Nb_p), bv_p(Nb_p), ipiv(Nb_p))
@@ -185,11 +185,11 @@ contains
       select case (mixing_scheme)
       case (mixing_scheme_linear)
          call mixing_linear &
-            (Ffunc, integral, reshape(Vin, [Nq*Ne]), &
+            (Ffunc, integral, reshape(Vin, [Nq * Ne]), &
              nband, scf_max_iter, scf_alpha, scf_L2_eps, scf_eig_eps, tmp)
       case (mixing_scheme_pulay)
          call mixing_pulay &
-            (Ffunc, integral, matvec, matmat, reshape(Vin, [Nq*Ne]), &
+            (Ffunc, integral, matvec, matmat, reshape(Vin, [Nq * Ne]), &
              nband, scf_max_iter, scf_alpha, scf_L2_eps, scf_eig_eps, tmp, 5, 3)
       case default
          error stop "Type of mixing not implemented."
@@ -206,13 +206,13 @@ contains
          Vin = reshape(x, shape(Vin))
          rho = 0
          idx = 0
-         V = Vin - Z/xq
+         V = Vin - Z / xq
          do l = 0, Lmax
 
             call assemble_radial_H_complete(V, xin, xe, ib, xiq, wtq, phihq, Hl(:, :, l), H)
 
             do concurrent(i=1:size(S), j=1:size(S), i >= j)
-               H(i, j) = H(i, j)*S(i)*S(j)
+               H(i, j) = H(i, j) * S(i) * S(j)
             end do
 
             eimin = eirange(1, l)
@@ -221,7 +221,7 @@ contains
             call solve_eig_irange(H, eimin, eimax, lam, D)
 
             do i = 1, size(S)
-               D(i, eimin:eimax) = D(i, eimin:eimax)*S(i)
+               D(i, eimin:eimax) = D(i, eimin:eimax) * S(i)
             end do
 
             do i = eimin, eimax
@@ -229,7 +229,7 @@ contains
 
                call c2fullc2(in, ib, D(:Nb, i), fullc)
                call fe2quad_core(xe, xin, in, fullc, phihq, uq)
-               rho = rho - focc(i, l)*(uq/xq)**2/(4*pi)
+               rho = rho - focc(i, l) * (uq / xq)**2 / (4 * pi)
 
                idx = idx + 1
                eng(focc_idx(i, l)) = lam(i)
@@ -245,9 +245,9 @@ contains
          !    print *, i, no(i), lo(i), energies(i)
          !end do
 
-         Vee = hartree_potential3(real(Z, dp), pp, xe, xin_p, in_p, ib_p, xiq, wtq, phihq_p, Am_p, ipiv, -4*pi*rho)
+         Vee = hartree_potential3(real(Z, dp), pp, xe, xin_p, in_p, ib_p, xiq, wtq, phihq_p, Am_p, ipiv, -4 * pi * rho)
          call xc_vwn3(size(rho), -rho, .FALSE., c, exc, Vxc)
-         call total_energy(xe, wtq, fo, energies, Vin - Z/xq, Vee, -Z/xq, exc, &
+         call total_energy(xe, wtq, fo, energies, Vin - Z / xq, Vee, -Z / xq, exc, &
                            xq, -rho, T_s, E_ee, E_en, EE_xc, Etot)
          Vout = Vee + Vxc ! This term is added later: -Z/xq
          y = reshape(Vout, shape(y))
@@ -291,14 +291,14 @@ contains
       real(dp) :: E_c, E_band
       rho = -n
 
-      E_band = sum(fo*ks_energies)
-      T_s = E_band + 4*pi*integrate(xe, wtq, V_in*rho*R**2)
+      E_band = sum(fo * ks_energies)
+      T_s = E_band + 4 * pi * integrate(xe, wtq, V_in * rho * R**2)
 
-      E_ee = -2*pi*integrate(xe, wtq, V_h*rho*R**2)
-      E_en = 4*pi*integrate(xe, wtq, (-V_coulomb)*rho*R**2)
+      E_ee = -2 * pi * integrate(xe, wtq, V_h * rho * R**2)
+      E_en = 4 * pi * integrate(xe, wtq, (-V_coulomb) * rho * R**2)
       E_c = E_ee + E_en
 
-      EE_xc = -4*pi*integrate(xe, wtq, e_xc*rho*R**2)
+      EE_xc = -4 * pi * integrate(xe, wtq, e_xc * rho * R**2)
 
       Etot = T_s + E_c + EE_xc
    end subroutine
@@ -306,13 +306,13 @@ contains
    subroutine csolve_schroed(Z, p, xiq, wtq, xe, eps, Nq, Ne, &
                              nenergies, energies, Etot, V) bind(c)
       integer(c_int), intent(in) :: Z, p, Nq, Ne, nenergies
-      real(c_double), intent(in) :: xe(Ne + 1)        ! element coordinates
-      real(c_double), intent(in) :: xiq(Nq)       ! quadrature points
-      real(c_double), intent(in) :: wtq(Nq)       ! quadrature weights
+      real(c_double), intent(in) :: xe(Ne + 1) ! element coordinates
+      real(c_double), intent(in) :: xiq(Nq) ! quadrature points
+      real(c_double), intent(in) :: wtq(Nq) ! quadrature weights
       real(c_double), intent(in) :: eps
       real(c_double), intent(out) :: energies(nenergies)
       real(c_double), intent(out) :: Etot
-      real(c_double), intent(out) :: V(Nq, Ne)    ! SCF potential
+      real(c_double), intent(out) :: V(Nq, Ne) ! SCF potential
       integer :: DOFs
       real(dp), allocatable :: energies2(:)
 
