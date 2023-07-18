@@ -5,7 +5,7 @@ enable-replacements=True
 c-relations=True
 
 # White space settings
-indent=3
+indent=4
 line-length=199
 strict-indent=True
 strip-comments=True
