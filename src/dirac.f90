@@ -6,7 +6,7 @@ use feutils, only: define_connect, get_quad_pts, get_parent_quad_pts_wts, &
         get_parent_nodes, phih, dphih, c2fullc2, fe2quad_core, get_nodes, &
         integrate, proj_fn, phih_array, integrate2, fe2quad
 use linalg, only: eigh
-use jacobi, only: gauss_jacobi
+use gjp_gw, only: gauss_jacobi_gw
 use fe, only: assemble_radial_SH, assemble_radial_dirac_SH
 use constants, only: pi, c => c_1986
 use hartree_screening, only: hartree_potential_gj
@@ -112,7 +112,7 @@ if (any(alpha_j > - 1)) then
     do kappa = Lmin, Lmax
         if (kappa == 0) cycle
         if (alpha_j(kappa) > -1) then
-            call gauss_jacobi(Nq, 0.0_dp, alpha_j(kappa), xiq_gj(:, kappa), wtq_gj(:, kappa))
+            call gauss_jacobi_gw(Nq, 0.0_dp, alpha_j(kappa), xiq_gj(:, kappa), wtq_gj(:, kappa))
         end if
     end do
 else

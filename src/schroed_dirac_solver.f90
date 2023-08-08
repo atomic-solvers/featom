@@ -8,7 +8,7 @@ use feutils, only: define_connect, get_quad_pts, get_parent_quad_pts_wts, &
         get_parent_nodes, phih, dphih, phih_array, dphih_array, c2fullc2, &
         fe2quad, fe2quad_core
 use fe, only: assemble_radial_S, assemble_radial_H, assemble_radial_dirac_SH
-use jacobi, only: gauss_jacobi
+use gjp_gw, only: gauss_jacobi_gw
 use linalg, only: eigh
 use string_utils, only: str
 implicit none
@@ -113,7 +113,7 @@ contains
         do kappa = -6, 5
             if (kappa == 0) cycle
             if (alpha_j(kappa) > -1) then
-                call gauss_jacobi(Nq, 0.0_dp, alpha_j(kappa), xiq1, wtq1)
+                call gauss_jacobi_gw(Nq, 0.0_dp, alpha_j(kappa), xiq1, wtq1)
                 call get_quad_pts(xe(:2), xiq1, xq1)
                 V(:,:1) = -Z/xq1(:,:1)-E_dirac_shift
             end if
