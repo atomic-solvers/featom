@@ -24,13 +24,13 @@ module gjp_gw
 use types, only: dp
 use lapack, only: DSTEQR
 implicit none
-contains
-
 
 type gjp_sparse_matrix
     real(dp), allocatable :: diagonal(:)
     real(dp), allocatable :: off_diagonal(:)
 end type gjp_sparse_matrix
+
+contains
 
 !> @brief Computes the zeros and weights for Gauss-Jacobi quadrature.
 !>
