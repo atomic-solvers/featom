@@ -82,6 +82,13 @@ interface
     CHARACTER          CMACH
     END FUNCTION
 
+    subroutine DSTEQR(COMPZ, N, D, E, Z, LDZ, WORK, INFO)
+        import :: dp
+        character :: COMPZ
+        integer :: N, LDZ, INFO
+        real(dp) :: D(*), E(*), Z(LDZ, *), WORK(*)
+    end subroutine DSTEQR
+
 end interface
 
 contains
