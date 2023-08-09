@@ -42,19 +42,20 @@ fpm run --profile=release conv -- 0 0 5
 
 Where the parameters to `conv` are:
 
-> ! <study_type> can be,
-> !       0: error as p is varied
-> !       1: error as rmax is varied
-> !       2: error as Ne is varied
-> !
-> ! <equation> can be,
-> !       0: Schroedinger
-> !       1: Dirac
-> !
-> ! For <study_type>
-> !       0, 1: 3rd parameter = Ne (Number of elements)
-> !       2   : 3rd parameter = p  (Polynomial order)
->
+```fortran
+! <study_type> can be,
+!       0: error as p is varied
+!       1: error as rmax is varied
+!       2: error as Ne is varied
+!
+! <equation> can be,
+!       0: Schroedinger
+!       1: Dirac
+!
+! For <study_type>
+!       0, 1: 3rd parameter = Ne (Number of elements)
+!       2   : 3rd parameter = p  (Polynomial order)
+```
 
 ### Setting up
 
