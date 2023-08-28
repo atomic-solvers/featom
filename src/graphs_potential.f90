@@ -170,4 +170,4 @@ end if
 close(u)
 end subroutine
 
-end module
+end module graphs_potential

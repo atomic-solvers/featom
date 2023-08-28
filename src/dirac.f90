@@ -315,4 +315,4 @@ call solve_dirac(Z, p, xiq, wtq, xe, eps, energies2, Etot, V, DOFs)
 energies = energies2
 end subroutine
 
-end module
+end module dirac

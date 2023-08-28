@@ -93,4 +93,4 @@ end interface
 
 contains
 
-end module
+end module lapack
