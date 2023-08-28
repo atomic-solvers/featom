@@ -1,0 +1,119 @@
+# This file is generated automatically. DO NOT EDIT!
+
+constants.o :  \
+	types.o
+
+dirac.o :  \
+	constants.o \
+	energies.o \
+	fe.o \
+	feutils.o \
+	gjp_gw.o \
+	hartree_screening.o \
+	linalg.o \
+	mesh.o \
+	mixings.o \
+	states.o \
+	types.o \
+	xc.o
+
+energies.o :  \
+	constants.o \
+	types.o
+
+fe.o :  \
+	constants.o \
+	feutils.o \
+	types.o
+
+feutils.o :  \
+	quadrature.o \
+	solvers.o \
+	types.o
+
+gjp_gw.o :  \
+	lapack.o \
+	types.o
+
+graphs.o :  \
+	dirac.o \
+	feutils.o \
+	mesh.o \
+	schroed_glob.o \
+	string_utils.o \
+	types.o
+
+graphs_potential.o :  \
+	dirac.o \
+	fe.o \
+	feutils.o \
+	linalg.o \
+	mesh.o \
+	schroed_dirac_solver.o \
+	schroed_glob.o \
+	string_utils.o \
+	types.o
+
+hartree_screening.o :  \
+	feutils.o \
+	solvers.o \
+	types.o
+
+lapack.o : 
+
+linalg.o :  \
+	lapack.o \
+	types.o
+
+mesh.o :  \
+	types.o
+
+mixings.o :  \
+	linalg.o \
+	types.o
+
+quadrature.o :  \
+	types.o
+
+schroed_dirac_solver.o :  \
+	constants.o \
+	dirac.o \
+	fe.o \
+	feutils.o \
+	gjp_gw.o \
+	linalg.o \
+	mesh.o \
+	schroed_glob.o \
+	string_utils.o \
+	types.o
+
+schroed_glob.o :  \
+	constants.o \
+	energies.o \
+	fe.o \
+	feutils.o \
+	hartree_screening.o \
+	lapack.o \
+	linalg.o \
+	mesh.o \
+	mixings.o \
+	solvers.o \
+	states.o \
+	types.o \
+	xc.o
+
+solvers.o :  \
+	lapack.o \
+	types.o
+
+states.o :  \
+	types.o
+
+string_utils.o :  \
+	types.o
+
+types.o : 
+
+xc.o :  \
+	constants.o \
+	types.o
