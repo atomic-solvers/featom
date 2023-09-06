@@ -11,7 +11,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  buildfpm:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,6 +27,8 @@ jobs:
           sudo apt-get install -y libomp-dev
           echo "Install lapack .."
           sudo apt-get install -y libopenblas-dev liblapack-dev
+          echo "install meson"
+          sudo apt-get install -y meson
 
       - name: Install fpm
         uses: fortran-lang/setup-fpm@v5
@@ -53,3 +55,38 @@ jobs:
           set -ex
           fpm test --profile=release
           fpm run --profile=release gpd_coulomb_schroed_nelements
+
+  buildmeson:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install packages
+        run: |
+          set -ex
+          echo "Update information of package list.."
+          sudo apt-get update
+          echo "Install Fortran compiler .."
+          sudo apt-get install -y gfortran
+          echo "Install OpenMP headers .."
+          sudo apt-get install -y libomp-dev
+          echo "Install lapack .."
+          sudo apt-get install -y libopenblas-dev liblapack-dev
+          echo "install meson"
+          sudo apt-get install -y meson
+
+      - name: Build featom
+        run: |
+          set -ex
+          meson setup bbdir -Dwith_tests=True -Dwith_app=True
+
+      - name: Test featom
+        run: |
+          set -ex
+          meson test -C bbdir
+
+      - name: Test convergence [release]
+        run: |
+          set -ex
+          meson compile -C bbdir
+          ./bbdir/app/gpd_coulomb_schroed_nelements
