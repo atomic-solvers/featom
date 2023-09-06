@@ -61,13 +61,13 @@ Where the parameters to `conv` are:
 
 We can use an `anaconda` helper like `micromamba` (installation instructions [are here](https://mamba.readthedocs.io/en/latest/installation.html).
 
-We can now set up the tools needed.
+We can now set up the tools needed. We support both `fpm` and `meson` as build systems.
 
 ``` bash
 # Global
-micromamba install fpm  -c conda-forge
+micromamba install fpm meson  -c conda-forge
 # Project Local
-micromamba create -p ./tmp fpm -c conda-forge
+micromamba create -p ./tmp fpm meson -c conda-forge
 micromamba activate ./tmp
 # Optionally: blas lapack openmp gfortran
 # Best obtained with a package manager
@@ -76,11 +76,51 @@ micromamba create -f environment.yml # creates fe
 micromamba activate fe
 ```
 
+#### Using `fpm`
+
+``` bash
+fpm build
+fpm run --profile=release conv -- 0 0 5
+```
+
+#### Using `meson`
+
+``` bash
+# release mode is the default
+meson setup bbdir -Dwith_app=true
+./bbdir/app/conv 0 0 5
+```
+
 ## Testing
 
 Tests can be run by:
 ```
 fpm test
+# Or, changing to debug
+meson setup bbdir -Dwith_tests=true --buildtype=debug
+meson test -C bbdir
+1/8 CoulombSchroed         OK              0.05s
+2/8 DftSchroedFast         OK              0.06s
+3/8 HarmonicSchroed        OK              0.11s
+4/8 DftSchroed             OK              0.12s
+5/8 HarmonicDirac          OK              0.47s
+6/8 CoulombDirac           OK              0.49s
+7/8 DftDiracFast           OK              1.95s
+8/8 DftDirac               OK              6.45s
+
+Ok:                 8   
+Expected Fail:      0   
+Fail:               0   
+Unexpected Pass:    0   
+Skipped:            0   
+Timeout:            0   
+```
+
+Individual test binaries can also be executed, e.g.:
+
+``` bash
+meson compile -C bbdir
+./bbdir/testDftDirac
 ```
 
 ## Documentation
