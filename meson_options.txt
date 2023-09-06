@@ -1,0 +1,3 @@
+# Booleans
+option('with_tests', type : 'boolean', value : false)
+option('with_app', type : 'boolean', value : false)

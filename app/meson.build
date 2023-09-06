@@ -1,6 +1,5 @@
-# --------------------- Executables
+# --------------------- Executable apps
 
-_deps += featom_dep
 conv = executable('conv', 'conv.f90',
                   dependencies: _deps,
                   include_directories: _incdirs,
