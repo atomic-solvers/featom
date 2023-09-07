@@ -20,4 +20,4 @@ type zvector                       ! allocatable complex double precision vector
    complex(dp), pointer :: vec(:) => null()
 end type
 
-end module
+end module types

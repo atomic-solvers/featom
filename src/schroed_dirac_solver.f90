@@ -148,4 +148,4 @@ contains
     end if
     end subroutine total_energy
 
-end module
+end module schroed_dirac_solver

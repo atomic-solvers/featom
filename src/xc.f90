@@ -216,4 +216,4 @@ end if
 Vxc = Vx + Vc
 end subroutine
 
-end module
+end module xc

@@ -48,4 +48,4 @@ read(arg, '(i4)') alpha_int
 call run_convergence_potential(study_type, dirac_int, p_or_Ne, &
      potential_type, alpha_int, ".")
 
-end program
+end program conv_potential
