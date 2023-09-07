@@ -10,8 +10,6 @@ use string_utils, only: str
 use schroed_dirac_solver, only: total_energy
 implicit none
 
-real(dp), allocatable :: xe(:)              ! element coordinates
-real(dp), allocatable :: xiq(:), wtq(:)     ! quadrature points and weights
 integer :: p, Ne, Nq, Z, i, DOFs
 real(dp) :: rmin, rmax, a, err, Etot
 real(dp), allocatable :: energies(:), xq(:,:), eigfn(:,:,:)
@@ -68,13 +66,11 @@ integer :: alpha_int
 ! The directory where to save the output files
 character(len=:), allocatable :: directory
 
-integer :: u, ind
+integer :: u
 real(dp) :: asympt, c
 real(dp), allocatable :: alpha_j(:), alpha(:)
 integer :: Lmax, Lmin, kappa
 real(dp) :: optim_a(2:7)
-integer :: Nes(11)
-character(len=128) :: arg
 
 
 Z = 92

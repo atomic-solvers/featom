@@ -14,6 +14,7 @@ dependencies:
   - pkg-config
   - openblas
   - openmp
+  - meson
   # Documentation
   - doxygen==1.9.1 # for doxyYoda
   - graphviz # for dot
