@@ -22,8 +22,72 @@ public solve_dirac, csolve_dirac
 
 contains
 
-subroutine solve_dirac(Z, p, xiq, wtq, xe, eps, energies, Etot, V, DOFs)
+subroutine solve_dirac_eigenproblem(Nb, Nq, Lmin, Lmax, alpha, alpha_j, xe, xiq_gj, &
+    xq, xq1, wtq_gj, V, Z, Vin, D, S, H, lam, rho0, rho1, accurate_eigensolver, fullc, &
+    ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, eng, xq2)
+logical, intent(in) :: accurate_eigensolver
+integer, intent(in) :: Lmin, Lmax, Z, Nb, Nq
+real(dp), intent(in) :: alpha_j(Lmin:), alpha(Lmin:), Vin(:,:), xq(:,:)
+real(dp), intent(in) :: xe(:), xiq_gj(:,Lmin:), wtq_gj(:,Lmin:)
+real(dp), intent(in) :: wtq(:), xin(:)
+real(dp), intent(in) :: xiq(:), focc(:,Lmin:), xq2(:,:)
+real(dp), intent(inout) :: xq1(:,:), V(:,:), fullc(:), uq(:,:), rho0(:,:), rho1(:,:)
+integer, intent(in) :: ib(:,:), in(:,:), focc_idx(:,Lmin:)
+real(dp), intent(inout) :: D(:,:), S(:,:), H(:,:), lam(:), lam_tmp(:), eng(:)
+integer, intent(out) :: idx
+integer :: kappa, i
+idx = 0
+do kappa = Lmin, Lmax
+    if (kappa == 0) cycle
+    !print *, "Calculating kappa =", kappa
+    if (alpha_j(kappa) > -1) then
+        call get_quad_pts(xe(:2), xiq_gj(:, kappa), xq1)
+        call proj_fn(Nq-1, xe(:2), xiq_gj(:,-1), wtq_gj(:,-1), xiq_gj(:, kappa), Vin, V(:,:1))
+        V(:,1) = V(:,1) - Z/xq1(:,1)
+        V(:,2:) = Vin(:,2:) - Z/xq(:,2:)
+    else
+        V = Vin - Z/xq
+    endif
 
+    call assemble_radial_dirac_SH(V, kappa, xin, xe, ib, xiq, wtq, &
+        xiq_gj(:, kappa), wtq_gj(:, kappa), alpha(kappa), alpha_j(kappa), c, S, H)
+
+    ! One can enforce symmetry using the following lines, it helps but
+    ! we still need two seperate eigensolves for 1e-8 accuracy:
+    !H = (H + transpose(H))/2
+    !S = (S + transpose(S))/2
+
+    if (accurate_eigensolver) then
+        call eigh(H, S, lam)
+        call eigh(H, S, lam_tmp, D)
+    else
+        call eigh(H, S, lam, D)
+    end if
+
+    do i = 1, size(focc,1)
+        if (focc(i,kappa) < tiny(1._dp)) cycle
+
+        call c2fullc2(in, ib, D(:Nb,i), fullc)
+        call fe2quad(xe, xin, xiq, in, fullc, uq)
+        rho0 = rho0 - focc(i,kappa)*uq**2 * xq**alpha_j(kappa)
+        call fe2quad(xe, xin, xiq_gj(:,-1), in, fullc, uq)
+        rho1(:,1) = rho1(:,1) - focc(i,kappa)*uq(:,1)**2 * xq2(:,1)**alpha_j(kappa)
+
+        call c2fullc2(in, ib, D(Nb+1:,i), fullc)
+        call fe2quad(xe, xin, xiq, in, fullc, uq)
+        rho0 = rho0 - focc(i,kappa)*uq**2 * xq**alpha_j(kappa)
+        call fe2quad(xe, xin, xiq_gj(:,-1), in, fullc, uq)
+        rho1(:,1) = rho1(:,1) - focc(i,kappa)*uq(:,1)**2 * xq2(:,1)**alpha_j(kappa)
+
+        idx = idx + 1
+        eng(focc_idx(i,kappa)) = sqrt(lam(i)) - c**2
+    end do
+
+end do
+end subroutine
+
+
+subroutine solve_dirac(Z, p, xiq, wtq, xe, eps, energies, Etot, V, DOFs)
 integer, intent(in) :: Z, p
 real(dp), intent(in) :: xe(:)        ! element coordinates
 real(dp), intent(in) :: xiq(:)       ! quadrature points
