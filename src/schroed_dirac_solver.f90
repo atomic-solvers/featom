@@ -110,41 +110,10 @@ contains
             end do
         end do
     else
-        do kappa = -6, 5
-            if (kappa == 0) cycle
-            if (alpha_j(kappa) > -1) then
-                call gauss_jacobi_gw(Nq, 0.0_dp, alpha_j(kappa), xiq1, wtq1)
-                call get_quad_pts(xe(:2), xiq1, xq1)
-                V(:,:1) = -Z/xq1(:,:1)-E_dirac_shift
-            end if
-            call assemble_radial_dirac_SH(V, kappa, xin, xe, ib, xiq, wtq, xiq1, wtq1, &
-                                            alpha(kappa), alpha_j(kappa), c, S2, H)
-            call eigh(H, S2, lam2, D)
-            if (kappa < 0) then
-                l = -kappa-1
-            else
-                l = kappa
-            end if
-            do k = 1, 7-l
-                ind = (kappa+1)*(kappa+1)+(k-1)*(2*kappa+1)+(k-1)*(k-2)
-                if (kappa < 0) then
-                    ind = ind + 2*k-2+(4*k-2)*(-1-kappa)
-                end if
-                if (kappa == -1) then
-                    ind = ind + 1
-                end if
-                lam(ind) = sqrt(lam2(k)) - c**2
-                lam(ind) = lam(ind) + E_dirac_shift
-
-                call c2fullc2(in, ib, D(:Nb,k), fullc)
-                call fe2quad(xe, xin, xiq, in, fullc, uq)
-                eigfn(:,:,ind) = uq * xq**(alpha_j(kappa)/2)
-                if (alpha_j(kappa) > -1) then
-                    call fe2quad(xe, xin, xiq1, in, fullc, uq)
-                    eigfn(:,1,ind) = uq(:,1) * xq1(:,1)**(alpha_j(kappa)/2)
-                end if
-            end do
-        end do
+        ! TODO: generate focc
+        call solve_dirac_eigenproblem(Nb, Nq, Lmin, Lmax, alpha, alpha_j, xe, xiq_gj, &
+            xq, xq1, wtq_gj, V, Z, Vin, D, S, H, lam2, rho0, rho1, .false., fullc, &
+            ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, lam, xq2)
     end if
     end subroutine total_energy
 
