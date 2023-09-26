@@ -3,7 +3,7 @@ use types, only: dp
 use constants, only: pi
 use mesh, only: meshexp
 use schroed_glob, only: solve_schroed
-use dirac, only: solve_dirac
+use dirac, only: solve_dirac, solve_dirac_eigenproblem
 use feutils, only: define_connect, get_quad_pts, get_parent_quad_pts_wts, &
         get_parent_nodes, phih, dphih, phih_array, dphih_array, c2fullc2, &
         fe2quad, fe2quad_core
@@ -23,12 +23,13 @@ contains
     integer, intent(out) :: DOFs
     real(dp), allocatable, intent(out) :: lam(:), eigfn(:,:,:)
     real(dp), intent(out) :: xq(Nq, Ne)
-    real(dp), allocatable :: xe(:), xiq(:), wtq(:), V(:,:), xin(:), &
+    real(dp), allocatable :: xe(:), xiq(:), wtq(:), V(:,:), Vin(:,:), xin(:), &
         H(:,:), S(:), S2(:,:), DSQ(:), phihq(:,:), dphihq(:,:), xiq_lob(:), wtq_lob(:), &
-        D(:,:), lam2(:), xiq1(:), wtq1(:), xq1(:,:), fullc(:), uq(:,:), rho(:,:)
-    integer, allocatable :: in(:,:), ib(:,:)
+        D(:,:), lam2(:), xiq1(:), wtq1(:), xq1(:,:), fullc(:), uq(:,:), rho(:,:), &
+        focc(:,:), lam_tmp(:), rho1(:,:)
+    integer, allocatable :: in(:,:), ib(:,:), focc_idx(:)
     real(dp) :: rmin
-    integer :: al, i, j, l, k, ind, kappa, Nb, Nn
+    integer :: al, i, j, l, k, ind, kappa, Nb, Nn, idx, Lmin2, Lmax
     real(dp) :: E_dirac_shift
     rmin = 0
     allocate(xe(Ne+1), xiq(Nq), xiq1(Nq), wtq(Nq), wtq1(Nq), V(Nq, Ne), xiq_lob(p+1), wtq_lob(p+1))
@@ -110,10 +111,12 @@ contains
             end do
         end do
     else
-        ! TODO: generate focc
-        call solve_dirac_eigenproblem(Nb, Nq, Lmin, Lmax, alpha, alpha_j, xe, xiq_gj, &
-            xq, xq1, wtq_gj, V, Z, Vin, D, S, H, lam2, rho0, rho1, .false., fullc, &
-            ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, lam, xq2)
+        ! TODO: allocate focc, focc_idx
+        Lmin2 = -6
+        Lmax = 5
+        call solve_dirac_eigenproblem(Nb, Nq, Lmin2, Lmax, alpha, alpha_j, xe, xiq1, &
+            xq, xq1, wtq1, V, Z, Vin, D, S, H, lam2, rho, rho1, .false., fullc, &
+            ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, lam, xq)
     end if
     end subroutine total_energy
 

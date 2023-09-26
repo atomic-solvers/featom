@@ -18,7 +18,7 @@ use energies, only: thomas_fermi_potential
 use iso_c_binding, only: c_double, c_int
 implicit none
 private
-public solve_dirac, csolve_dirac
+public solve_dirac, csolve_dirac, solve_dirac_eigenproblem
 
 contains
 
