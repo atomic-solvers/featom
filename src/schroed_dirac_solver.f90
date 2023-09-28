@@ -26,8 +26,8 @@ contains
     real(dp), allocatable :: xe(:), xiq(:), wtq(:), V(:,:), Vin(:,:), xin(:), &
         H(:,:), S(:), S2(:,:), DSQ(:), phihq(:,:), dphihq(:,:), xiq_lob(:), wtq_lob(:), &
         D(:,:), lam2(:), xiq1(:), wtq1(:), xq1(:,:), fullc(:), uq(:,:), rho(:,:), &
-        focc(:,:), lam_tmp(:), rho1(:,:)
-    integer, allocatable :: in(:,:), ib(:,:), focc_idx(:)
+        focc(:,:), lam_tmp(:), rho1(:,:), xiq_gj(:,:), wtq_gj(:,:)
+    integer, allocatable :: in(:,:), ib(:,:), focc_idx(:,:)
     real(dp) :: rmin
     integer :: al, i, j, l, k, ind, kappa, Nb, Nn, idx, Lmin2, Lmax
     real(dp) :: E_dirac_shift
@@ -114,8 +114,10 @@ contains
         ! TODO: allocate focc, focc_idx
         Lmin2 = -6
         Lmax = 5
-        call solve_dirac_eigenproblem(Nb, Nq, Lmin2, Lmax, alpha, alpha_j, xe, xiq1, &
-            xq, xq1, wtq1, V, Z, Vin, D, S, H, lam2, rho, rho1, .false., fullc, &
+        allocate(xiq_gj(size(xe),Lmin:Lmax))
+        allocate(wtq_gj(size(xe),Lmin:Lmax))
+        call solve_dirac_eigenproblem(Nb, Nq, Lmin2, Lmax, alpha, alpha_j, xe, xiq_gj, &
+            xq, xq1, wtq_gj, V, Z, Vin, D, S2, H, lam2, rho, rho1, .false., fullc, &
             ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, lam, xq)
     end if
     end subroutine total_energy
