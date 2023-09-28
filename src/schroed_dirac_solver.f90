@@ -33,7 +33,7 @@ contains
     real(dp) :: E_dirac_shift
     rmin = 0
     allocate(xe(Ne+1), xiq(Nq), xiq1(Nq), wtq(Nq), wtq1(Nq), V(Nq, Ne), xiq_lob(p+1), wtq_lob(p+1))
-    allocate(phihq(Nq, p+1), dphihq(Nq, p+1), in(p+1, Ne), ib(p+1, Ne), xin(p+1), xq1(Nq, Ne))
+    allocate(phihq(Nq, p+1), dphihq(Nq, p+1), in(p+1, Ne), ib(p+1, Ne), xin(p+1), xq1(Nq,1))
 
     xe = meshexp(rmin, rmax, a, Ne)
     call get_parent_quad_pts_wts(1, Nq, xiq, wtq)
