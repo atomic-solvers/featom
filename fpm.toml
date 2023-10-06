@@ -11,3 +11,6 @@ auto-examples = true
 link = ["blas", "lapack"]
 [install]
 library = false
+[dependencies]
+GaussJacobiQuad.git = "https://github.com/HaoZeke/GaussJacobiQuad"
+GaussJacobiQuad.branch = "main"
