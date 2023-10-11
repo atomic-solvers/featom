@@ -145,8 +145,8 @@ else
     Ne = p_or_Ne
 end if
 
-Lmax=6
-Lmin=-7
+Lmax=5
+Lmin=-6
 
 allocate(alpha(Lmin:Lmax), alpha_j(Lmin:Lmax))
 do kappa = Lmin, Lmax
