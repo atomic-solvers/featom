@@ -150,7 +150,8 @@ contains
         end do
         call solve_dirac_eigenproblem(Nb, Nq, Lmin2, Lmax, alpha, alpha_j, xe, xiq_gj, &
             xq, xq1, wtq_gj, V, Z, Vin, D, S2, H, lam2, rho, rho1, .false., fullc, &
-            ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, lam, xq)
+            ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, lam, xq, &
+            E_dirac_shift)
     end if
     end subroutine total_energy
 
