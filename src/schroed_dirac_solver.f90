@@ -80,6 +80,7 @@ contains
         E_dirac_shift = 500
     else
         Vin = xq**2/2
+        V = Vin
         E_dirac_shift = 1000
     end if
     if (dirac_int == 1) then
