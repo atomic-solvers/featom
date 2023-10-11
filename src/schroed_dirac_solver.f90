@@ -72,11 +72,14 @@ contains
         allocate(eigfn(Nq, Ne, 28))
     end if
 
+    allocate(Vin(size(xq,1), size(xq,2)))
+
     if (potential_type == 0) then
         V = -Z/xq
+        Vin = 0
         E_dirac_shift = 500
     else
-        V = xq**2/2
+        Vin = xq**2/2
         E_dirac_shift = 1000
     end if
     if (dirac_int == 1) then
@@ -113,8 +116,6 @@ contains
     else
         Lmin2 = -6
         Lmax = 5
-        allocate(Vin(size(xq,1), size(xq,2)))
-        Vin = 0
         allocate(xiq_gj(size(xiq1),Lmin:Lmax))
         allocate(wtq_gj(size(wtq1),Lmin:Lmax))
         allocate(rho1(Nq,Ne))

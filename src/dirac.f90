@@ -31,9 +31,10 @@ real(dp), intent(in) :: alpha_j(Lmin:), alpha(Lmin:), Vin(:,:), xq(:,:)
 real(dp), intent(in) :: xe(:), xiq_gj(:,Lmin:), wtq_gj(:,Lmin:)
 real(dp), intent(in) :: wtq(:), xin(:)
 real(dp), intent(in) :: xiq(:), focc(:,Lmin:), xq2(:,:)
-real(dp), intent(inout) :: xq1(:,:), V(:,:), fullc(:), uq(:,:), rho0(:,:), rho1(:,:)
+real(dp), intent(inout) :: xq1(:,:), fullc(:), uq(:,:), rho0(:,:), rho1(:,:)
 integer, intent(in) :: ib(:,:), in(:,:), focc_idx(:,Lmin:)
 real(dp), intent(inout) :: D(:,:), S(:,:), H(:,:), lam(:), lam_tmp(:), eng(:)
+real(dp), intent(out) :: V(:,:)
 integer, intent(out) :: idx
 real(dp), intent(in) :: E_dirac_shift
 integer :: kappa, i
@@ -45,7 +46,7 @@ do kappa = Lmin, Lmax
         call get_quad_pts(xe(:2), xiq_gj(:, kappa), xq1)
         call proj_fn(Nq-1, xe(:2), xiq_gj(:,-1), wtq_gj(:,-1), xiq_gj(:, kappa), Vin, V(:,:1))
         V(:,1) = V(:,1) - Z/xq1(:,1) - E_dirac_shift
-        V(:,2:) = Vin(:,2:) - Z/xq(:,2:) -E_dirac_shift
+        V(:,2:) = Vin(:,2:) - Z/xq(:,2:) - E_dirac_shift
     else
         V = Vin - Z/xq - E_dirac_shift
     endif
