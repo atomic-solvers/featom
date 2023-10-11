@@ -117,6 +117,7 @@ contains
         Vin = 0
         allocate(xiq_gj(size(xiq1),Lmin:Lmax))
         allocate(wtq_gj(size(wtq1),Lmin:Lmax))
+        allocate(rho1(Nq,Ne))
 
         ! Initialize focc and focc_idx
         allocate(focc(max(Lmax,abs(Lmin2))+1,Lmin2:Lmax))
