@@ -145,8 +145,8 @@ else
     Ne = p_or_Ne
 end if
 
-Lmax=6
-Lmin=-7
+Lmax=5
+Lmin=-6
 
 allocate(alpha(Lmin:Lmax), alpha_j(Lmin:Lmax))
 do kappa = Lmin, Lmax
@@ -184,7 +184,7 @@ i = 23
 !end if
 p = i
 allocate(xq(Nq, Ne))
-call total_energy(Z, rmax, Ne, a, p, Nq, DOFs, alpha_int, dirac_int, &
+call total_energy(0, rmax, Ne, a, p, Nq, DOFs, alpha_int, dirac_int, &
     c, potential_type, Lmin, alpha_j, alpha, energies, eigfn, xq)
 Etot = sum(energies)
 allocate(energies_ref(size(energies)))
