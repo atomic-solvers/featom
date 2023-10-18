@@ -183,7 +183,7 @@ subroutine assemble_poisson_gj(f_vals, xin, xe, ib, xiq, wtq, xiq1, wtq1, &
 ! \int u'(r)*v'(r) \d r = \int f(x) * r * v(x) \d r
 ! The f(r) is rewritten as f(r) = r^zeta * (f(r)/r^zeta) and the GJ quadrature
 ! integrates f(r)/r^zeta. The zeta and xiq1/wtq1 must be consistent and
-! containt he GJ quadrature.
+! contain the GJ quadrature.
 real(dp), intent(in) :: f_vals(:,:)   ! f(x) at quadrature points:
    ! f_vals(i,j) = value at ith point in jth element
 real(dp), intent(in) :: xin(:)       ! parent basis nodes
