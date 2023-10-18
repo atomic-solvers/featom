@@ -234,7 +234,7 @@ contains
     real(dp) :: E_dirac_shift
     integer :: idx
     logical :: accurate_eigensolver
-    accurate_eigensolver = .false.
+    accurate_eigensolver = .true.
     iter = iter + 1
     print *, "SCF iteration:", iter
     Vin = reshape(x, shape(Vin))
