@@ -13,8 +13,11 @@ dependencies:
   - gfortran
   - pkg-config
   - openblas
-  - openmp
   - meson
+  - intel::intel-openmp
+  - mkl-devel=2023.2=ha770c72_49502
+  - ninja
+  - cmake
   # Documentation
   - doxygen==1.9.1 # for doxyYoda
   - graphviz # for dot
