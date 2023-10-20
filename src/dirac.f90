@@ -16,6 +16,7 @@ use states, only: get_atomic_states_nonrel_focc, get_atomic_states_rel_focc, &
     nlsf2focc, get_atomic_states_rel, nlf2focc, get_atomic_states_nonrel
 use energies, only: thomas_fermi_potential
 use iso_c_binding, only: c_double, c_int
+use lapack, only: dpotrf
 implicit none
 private
 public solve_dirac, csolve_dirac, solve_dirac_eigenproblem
@@ -37,7 +38,8 @@ real(dp), intent(inout) :: D(:,:), S(:,:), H(:,:), lam(:), lam_tmp(:), eng(:)
 real(dp), intent(out) :: V(:,:)
 integer, intent(out) :: idx
 real(dp), intent(in) :: E_dirac_shift
-integer :: kappa, i
+real(dp) :: SU(size(S,1),size(S,2))
+integer :: kappa, i, info, j
 idx = 0
 do kappa = Lmin, Lmax
     if (kappa == 0) cycle
@@ -58,6 +60,13 @@ do kappa = Lmin, Lmax
     ! we still need two seperate eigensolves for 1e-8 accuracy:
     !H = (H + transpose(H))/2
     !S = (S + transpose(S))/2
+    SU = S
+    do j = 1, size(SU,1)
+        SU(j+1:,j) = 0
+    end do
+    call dpotrf('U', size(SU,1), SU, size(SU,1), info)
+    if (info /= 0) error stop
+    S = matmul(transpose(SU), SU)
 
     if (accurate_eigensolver) then
         call eigh(H, S, lam)

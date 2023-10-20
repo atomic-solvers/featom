@@ -89,6 +89,13 @@ interface
                        Z( LDZ, * )
     END SUBROUTINE
 
+    SUBROUTINE DPOTRF( UPLO, N, A, LDA, INFO )
+    import :: dp
+    CHARACTER          UPLO
+    INTEGER            INFO, LDA, N
+    REAL(dp)           A( LDA, * )
+    END SUBROUTINE
+
     REAL(dp) FUNCTION DLAMCH( CMACH )
     import :: dp
     CHARACTER          CMACH
