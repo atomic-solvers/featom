@@ -77,6 +77,18 @@ interface
     REAL(dp)           A( LDA, * ), B( LDB, * ), W( * ), WORK( * )
     END SUBROUTINE
 
+    SUBROUTINE DSYGVX( ITYPE, JOBZ, RANGE, UPLO, N, A, LDA, B, LDB, &
+                       VL, VU, IL, IU, ABSTOL, M, W, Z, LDZ, WORK, &
+                       LWORK, IWORK, IFAIL, INFO )
+    import :: dp
+    CHARACTER          JOBZ, RANGE, UPLO
+    INTEGER            IL, INFO, ITYPE, IU, LDA, LDB, LDZ, LWORK, M, N
+    REAL(dp)           ABSTOL, VL, VU
+    INTEGER            IFAIL( * ), IWORK( * )
+    REAL(dp)           A( LDA, * ), B( LDB, * ), W( * ), WORK( * ), &
+                       Z( LDZ, * )
+    END SUBROUTINE
+
     REAL(dp) FUNCTION DLAMCH( CMACH )
     import :: dp
     CHARACTER          CMACH
