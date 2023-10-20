@@ -25,7 +25,7 @@ contains
     ! lapack variables
     integer :: lwork, liwork, info
     integer, allocatable :: iwork(:), ifail(:)
-    real(dp), allocatable :: Bmt(:,:), work(:), Z(:,:)
+    real(dp), allocatable :: Bmt(:,:), work(:), Z(:,:), Amt(:,:)
     integer :: il, iu, M
     real(dp) :: abstol
 
@@ -37,19 +37,18 @@ contains
     lwork = 1 + 6*n + 2*n**2
     liwork = 3 + 5*n
     allocate(Bmt(n,n), work(lwork), iwork(liwork))
+    allocate(Amt(n,n))
     allocate(ifail(n))
-    c = Am; Bmt = Bm  ! Bmt temporaries overwritten by dsygvd
+    Amt = Am; Bmt = Bm  ! Bmt temporaries overwritten by dsygvd
     !call dsygvd(1,'V','L',n,c,n,Bmt,n,lam,work,lwork,iwork,liwork,info)
     il = 1
     iu = 7
     M = iu-il+1
     allocate(z(n,M))
-    abstol = 1e-8_dp
-    call dsygvx(1,'V','I','L',n,c,n,Bmt,n, &
-        0._dp, 0._dp, 1, 7, abstol, M, lam, z, n, work, &
+    abstol = 1e-4_dp
+    call dsygvx(1,'V','I','L',n,Amt,n,Bmt,n, &
+        0._dp, 0._dp, 1, 7, abstol, M, lam, c, n, work, &
         lwork, iwork, ifail, info)
-    c = 0
-    c(:,:M) = z
     !SUBROUTINE DSYGVD( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK, &
     !                   LWORK, IWORK, LIWORK, INFO )
     !SUBROUTINE DSYGVX( ITYPE, JOBZ, RANGE, UPLO, N, A, LDA, B, LDB, &
