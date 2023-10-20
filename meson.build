@@ -24,8 +24,13 @@ if is_mingw
 endif
 
 # --------------------- Dependencies
-lapack = dependency('lapack', required: true)
-_deps += [lapack]
+mkldep = dependency('mkl-dynamic-lp64-seq', required: false)
+if not mkldep.found()
+    lapack = dependency('lapack', required: true)
+    _deps += [lapack]
+else
+    _deps += [mkldep]
+endif
 
 # --------------------- Library
 subdir('src') # defines featom_dep
