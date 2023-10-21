@@ -53,6 +53,12 @@ do kappa = Lmin, Lmax
 
     call assemble_radial_dirac_SH(V, kappa, xin, xe, ib, xiq, wtq, &
         xiq_gj(:, kappa), wtq_gj(:, kappa), alpha(kappa), alpha_j(kappa), c, invS(:,:,kappa), H)
+    do j = 1, size(invS,1)
+        invS(j+1:,j,kappa) = 0
+    end do
+    call dpotrf('U', size(invS,1), invS(:,:,kappa), size(invS,1), info)
+    if (info /= 0) error stop
+    invS(:,:,kappa) = inv(invS(:,:,kappa))
 end do
 do kappa = Lmin, Lmax
     if (kappa == 0) cycle
@@ -74,13 +80,13 @@ do kappa = Lmin, Lmax
     !H = (H + transpose(H))/2
     !S = (S + transpose(S))/2
     SU = invS(:,:,kappa)
-    do j = 1, size(SU,1)
-        SU(j+1:,j) = 0
-    end do
-    call dpotrf('U', size(SU,1), SU, size(SU,1), info)
-    if (info /= 0) error stop
-    S = matmul(transpose(SU), SU)
-    SU = inv(SU)
+    !do j = 1, size(SU,1)
+    !    SU(j+1:,j) = 0
+    !end do
+    !call dpotrf('U', size(SU,1), SU, size(SU,1), info)
+    !if (info /= 0) error stop
+    !S = matmul(transpose(SU), SU)
+    !SU = inv(SU)
 
     if (accurate_eigensolver) then
         call eigh(H, S, lam)
