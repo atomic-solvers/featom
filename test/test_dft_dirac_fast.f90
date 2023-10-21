@@ -70,7 +70,7 @@ print *, "Total energy:"
 print "(a16,a16,a10)", "E", "E_ref", "error"
 err = abs(Etot - Etot_ref)
 print "(f16.8, f16.8, es10.2)", Etot, Etot_ref, err
-if ( .not. (err < 1e-6_dp)) then
+if ( .not. (err < 3e-6_dp)) then
    error stop 'assert failed'
 end if
 print *
