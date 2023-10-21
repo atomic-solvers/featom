@@ -84,8 +84,12 @@ do kappa = Lmin, Lmax
         ! We need to compute inv(U), which is upper triangular as well.
         !
         !call eigh(H, S, lam, D)
+
+        ! TODO: Could only operate on triangles here
         H = matmul(invST(:,:,kappa), matmul(H, invS(:,:,kappa)))
+        ! TODO: only compute 7 eigenvalues here
         call eigh(H, lam, D)
+        ! TODO: only lowest 7 are needed
         D = matmul(invS(:,:,kappa), D)
     end if
 
