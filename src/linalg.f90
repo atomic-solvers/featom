@@ -3,7 +3,7 @@ module linalg
   use lapack, only: dsyevd, dsygvd, dgesv, dsygvx, ilaenv, dgetrf, dgetri
   implicit none
   private
-  public eigh, solve
+  public eigh, solve, inv
 
   interface eigh
      module procedure deigh_generalized
@@ -188,7 +188,7 @@ contains
     end if
   end subroutine assert_shape
 
-  function dinv(Am) result(Bm)                 
+  function inv(Am) result(Bm)                 
     real(dp), intent(in) :: Am(:,:)  ! matrix to be inverted
     real(dp) :: Bm(size(Am, 1), size(Am, 2))   ! Bm = inv(Am)
     real(dp), allocatable :: Amt(:,:), work(:)  ! temporary work arrays
@@ -233,7 +233,7 @@ contains
     end if
     Bm = Amt
 
-  end function dinv
+  end function
 
 
 end module linalg

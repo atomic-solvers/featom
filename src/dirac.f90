@@ -5,7 +5,7 @@ use mesh, only: meshexp
 use feutils, only: define_connect, get_quad_pts, get_parent_quad_pts_wts, &
         get_parent_nodes, phih, dphih, c2fullc2, fe2quad_core, get_nodes, &
         integrate, proj_fn, phih_array, integrate2, fe2quad
-use linalg, only: eigh
+use linalg, only: eigh, inv
 use gjp_gw, only: gauss_jacobi_gw
 use fe, only: assemble_radial_SH, assemble_radial_dirac_SH
 use constants, only: pi, c => c_1986
@@ -67,6 +67,7 @@ do kappa = Lmin, Lmax
     call dpotrf('U', size(SU,1), SU, size(SU,1), info)
     if (info /= 0) error stop
     S = matmul(transpose(SU), SU)
+    SU = inv(SU)
 
     if (accurate_eigensolver) then
         call eigh(H, S, lam)
