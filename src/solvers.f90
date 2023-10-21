@@ -38,7 +38,8 @@ if ( .not. (size(lam) == n) ) then
 end if
 allocate(Amt(n,n),work(lwork),iwork(5*n),ifail(n))
 Amt=Am; ! Amt temporaries overwritten by dsyevx
-abstol=2*dlamch('S')
+!abstol=2*dlamch('S')
+abstol=1e-4
 call dsyevx('V','I','L',n,Amt,n,0.0_dp,0.0_dp,l,h,abstol,m, &
     lam,c,n,work,lwork,iwork,ifail,info)
 if (info/=0) then
