@@ -25,7 +25,8 @@ contains
 
 subroutine solve_dirac_eigenproblem(Nb, Nq, Lmin, Lmax, alpha, alpha_j, xe, xiq_gj, &
     xq, xq1, wtq_gj, V, Z, Vin, D, S, H, lam, rho0, rho1, accurate_eigensolver, fullc, &
-    ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, eng, xq2, E_dirac_shift)
+    ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, eng, xq2, E_dirac_shift, &
+    invS)
 logical, intent(in) :: accurate_eigensolver
 integer, intent(in) :: Lmin, Lmax, Z, Nb, Nq
 real(dp), intent(in) :: alpha_j(Lmin:), alpha(Lmin:), Vin(:,:), xq(:,:)
@@ -38,6 +39,7 @@ real(dp), intent(inout) :: D(:,:), S(:,:), H(:,:), lam(:), lam_tmp(:), eng(:)
 real(dp), intent(out) :: V(:,:)
 integer, intent(out) :: idx
 real(dp), intent(in) :: E_dirac_shift
+real(dp), intent(in) :: invS(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
 real(dp) :: SU(size(S,1),size(S,2))
 integer :: kappa, i, info, j
 idx = 0
@@ -152,6 +154,7 @@ integer :: mixing_scheme
 integer, allocatable :: no(:), lo(:), so(:), focc_idx(:,:)
 real(dp), allocatable :: fo_idx(:), fo(:)
 real(dp) :: T_s, E_ee, E_en, EE_xc
+real(dp), allocatable :: invS(:,:,:)
 
 
 integer :: nband, scf_max_iter, iter
@@ -226,6 +229,7 @@ allocate(H(n, n), S(n, n))
 allocate(D(n, n), lam(n), lam_tmp(n), fullc(Nn), uq(Nq,Ne), rho(Nq,Ne), Vee(Nq,Ne), &
     Vxc(Nq,Ne), exc(Nq,Ne), Vin(Nq,Ne), Vout(Nq,Ne), xq2(Nq, Ne), &
     rho0(Nq,Ne), rho1(Nq,Ne))
+allocate(invS(n,n,-Lmin:Lmax))
 
 nband = count(focc > 0)
 scf_max_iter = 100
@@ -275,7 +279,7 @@ contains
     E_dirac_shift = 0
     call solve_dirac_eigenproblem(Nb, Nq, Lmin, Lmax, alpha, alpha_j, xe, xiq_gj, &
         xq, xq1, wtq_gj, V, Z, Vin, D, S, H, lam, rho0, rho1, accurate_eigensolver, fullc, &
-        ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, eng, xq2, E_dirac_shift)
+        ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, eng, xq2, E_dirac_shift, invS)
     if ( .not. (size(eng) == idx) ) then
        error stop 'Size mismatch in energy array'
     end if
