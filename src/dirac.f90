@@ -50,24 +50,6 @@ do kappa = Lmin, Lmax
     if (alpha_j(kappa) > -1) then
         call get_quad_pts(xe(:2), xiq_gj(:, kappa), xq1)
         call proj_fn(Nq-1, xe(:2), xiq_gj(:,-1), wtq_gj(:,-1), xiq_gj(:, kappa), Vin, V(:,:1))
-    endif
-
-    call assemble_radial_dirac_SH(V, kappa, xin, xe, ib, xiq, wtq, &
-        xiq_gj(:, kappa), wtq_gj(:, kappa), alpha(kappa), alpha_j(kappa), c, invS(:,:,kappa), H)
-    do j = 1, size(invS,1)
-        invS(j+1:,j,kappa) = 0
-    end do
-    call dpotrf('U', size(invS,1), invS(:,:,kappa), size(invS,1), info)
-    if (info /= 0) error stop
-    invS(:,:,kappa) = inv(invS(:,:,kappa))
-    invST(:,:,kappa) = transpose(invS(:,:,kappa))
-end do
-do kappa = Lmin, Lmax
-    if (kappa == 0) cycle
-    !print *, "Calculating kappa =", kappa
-    if (alpha_j(kappa) > -1) then
-        call get_quad_pts(xe(:2), xiq_gj(:, kappa), xq1)
-        call proj_fn(Nq-1, xe(:2), xiq_gj(:,-1), wtq_gj(:,-1), xiq_gj(:, kappa), Vin, V(:,:1))
         V(:,1) = V(:,1) - Z/xq1(:,1) - E_dirac_shift
         V(:,2:) = Vin(:,2:) - Z/xq(:,2:) - E_dirac_shift
     else
@@ -175,6 +157,7 @@ real(dp), allocatable :: fo_idx(:), fo(:)
 real(dp) :: T_s, E_ee, E_en, EE_xc
 real(dp), allocatable :: invS(:,:,:)
 real(dp), allocatable :: invST(:,:,:)
+integer :: info, j
 
 
 integer :: nband, scf_max_iter, iter
@@ -251,6 +234,24 @@ allocate(D(n, n), lam(n), lam_tmp(n), fullc(Nn), uq(Nq,Ne), rho(Nq,Ne), Vee(Nq,N
     rho0(Nq,Ne), rho1(Nq,Ne))
 allocate(invS(n,n,Lmin:Lmax))
 allocate(invST(n,n,Lmin:Lmax))
+do kappa = Lmin, Lmax
+    if (kappa == 0) cycle
+    !print *, "Calculating kappa =", kappa
+    if (alpha_j(kappa) > -1) then
+        call get_quad_pts(xe(:2), xiq_gj(:, kappa), xq1)
+        call proj_fn(Nq-1, xe(:2), xiq_gj(:,-1), wtq_gj(:,-1), xiq_gj(:, kappa), Vin, V(:,:1))
+    endif
+
+    call assemble_radial_dirac_SH(V, kappa, xin, xe, ib, xiq, wtq, &
+        xiq_gj(:, kappa), wtq_gj(:, kappa), alpha(kappa), alpha_j(kappa), c, invS(:,:,kappa), H)
+    do j = 1, size(invS,1)
+        invS(j+1:,j,kappa) = 0
+    end do
+    call dpotrf('U', size(invS,1), invS(:,:,kappa), size(invS,1), info)
+    if (info /= 0) error stop
+    invS(:,:,kappa) = inv(invS(:,:,kappa))
+    invST(:,:,kappa) = transpose(invS(:,:,kappa))
+end do
 
 nband = count(focc > 0)
 scf_max_iter = 100
