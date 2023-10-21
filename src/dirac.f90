@@ -90,7 +90,7 @@ do kappa = Lmin, Lmax
         ! TODO: only compute 7 eigenvalues here
         call eigh(H, lam, D)
         ! TODO: only lowest 7 are needed
-        D = matmul(invS(:,:,kappa), D)
+        D(:,:7) = matmul(invS(:,:,kappa), D(:,:7))
     end if
 
     do i = 1, size(focc,1)
