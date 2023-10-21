@@ -39,10 +39,21 @@ real(dp), intent(inout) :: D(:,:), S(:,:), H(:,:), lam(:), lam_tmp(:), eng(:)
 real(dp), intent(out) :: V(:,:)
 integer, intent(out) :: idx
 real(dp), intent(in) :: E_dirac_shift
-real(dp), intent(in) :: invS(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
+real(dp), intent(inout) :: invS(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
 real(dp) :: SU(size(S,1),size(S,2))
 integer :: kappa, i, info, j
 idx = 0
+do kappa = Lmin, Lmax
+    if (kappa == 0) cycle
+    !print *, "Calculating kappa =", kappa
+    if (alpha_j(kappa) > -1) then
+        call get_quad_pts(xe(:2), xiq_gj(:, kappa), xq1)
+        call proj_fn(Nq-1, xe(:2), xiq_gj(:,-1), wtq_gj(:,-1), xiq_gj(:, kappa), Vin, V(:,:1))
+    endif
+
+    call assemble_radial_dirac_SH(V, kappa, xin, xe, ib, xiq, wtq, &
+        xiq_gj(:, kappa), wtq_gj(:, kappa), alpha(kappa), alpha_j(kappa), c, invS(:,:,kappa), H)
+end do
 do kappa = Lmin, Lmax
     if (kappa == 0) cycle
     !print *, "Calculating kappa =", kappa
@@ -62,7 +73,7 @@ do kappa = Lmin, Lmax
     ! we still need two seperate eigensolves for 1e-8 accuracy:
     !H = (H + transpose(H))/2
     !S = (S + transpose(S))/2
-    SU = S
+    SU = invS(:,:,kappa)
     do j = 1, size(SU,1)
         SU(j+1:,j) = 0
     end do
@@ -229,7 +240,7 @@ allocate(H(n, n), S(n, n))
 allocate(D(n, n), lam(n), lam_tmp(n), fullc(Nn), uq(Nq,Ne), rho(Nq,Ne), Vee(Nq,Ne), &
     Vxc(Nq,Ne), exc(Nq,Ne), Vin(Nq,Ne), Vout(Nq,Ne), xq2(Nq, Ne), &
     rho0(Nq,Ne), rho1(Nq,Ne))
-allocate(invS(n,n,-Lmin:Lmax))
+allocate(invS(n,n,Lmin:Lmax))
 
 nband = count(focc > 0)
 scf_max_iter = 100
