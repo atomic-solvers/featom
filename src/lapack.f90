@@ -100,6 +100,27 @@ interface
     import :: dp
     CHARACTER          CMACH
     END FUNCTION
+
+    INTEGER FUNCTION ILAENV( ISPEC, NAME, OPTS, N1, N2, N3, N4 )    
+    CHARACTER*( * )    NAME, OPTS                 
+    INTEGER            ISPEC, N1, N2, N3, N4               
+    END FUNCTION                        
+
+    SUBROUTINE DGETRF( M, N, A, LDA, IPIV, INFO )                   
+    import :: dp                                  
+    INTEGER            INFO, LDA, M, N                     
+    INTEGER            IPIV( * )        
+    REAL(dp)           A( LDA, * )                                    
+    END SUBROUTINE                               
+
+    SUBROUTINE DGETRI( N, A, LDA, IPIV, WORK, LWORK, INFO )          
+    import :: dp                  
+    INTEGER            INFO, LDA, LWORK, N                            
+    INTEGER            IPIV( * )                                        
+    REAL(dp)           A( LDA, * ), WORK( * )         
+    END SUBROUTINE                                                  
+
+
 end interface
 
 contains
