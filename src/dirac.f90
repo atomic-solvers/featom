@@ -39,10 +39,9 @@ real(dp), intent(inout) :: D(:,:), S(:,:), H(:,:), lam(:), lam_tmp(:), eng(:)
 real(dp), intent(out) :: V(:,:)
 integer, intent(out) :: idx
 real(dp), intent(in) :: E_dirac_shift
-real(dp), intent(inout) :: invS(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
-real(dp), intent(inout) :: invST(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
-!real(dp) :: SU(size(S,1),size(S,2))
-integer :: kappa, i, info, j
+real(dp), intent(in) :: invS(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
+real(dp), intent(in) :: invST(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
+integer :: kappa, i
 idx = 0
 do kappa = Lmin, Lmax
     if (kappa == 0) cycle
@@ -63,14 +62,6 @@ do kappa = Lmin, Lmax
     ! we still need two seperate eigensolves for 1e-8 accuracy:
     !H = (H + transpose(H))/2
     !S = (S + transpose(S))/2
-    !SU = invS(:,:,kappa)
-    !do j = 1, size(SU,1)
-    !    SU(j+1:,j) = 0
-    !end do
-    !call dpotrf('U', size(SU,1), SU, size(SU,1), info)
-    !if (info /= 0) error stop
-    !S = matmul(transpose(SU), SU)
-    !SU = inv(SU)
 
     if (accurate_eigensolver) then
         call eigh(H, S, lam)
