@@ -32,6 +32,7 @@ contains
     integer :: al, i, j, l, k, ind, kappa, Nb, Nn, idx, Lmin2, Lmax
     real(dp) :: E_dirac_shift
     real(dp), allocatable :: invS(:,:,:)
+    real(dp), allocatable :: invST(:,:,:)
     rmin = 0
     allocate(xe(Ne+1), xiq(Nq), xiq1(Nq), wtq(Nq), wtq1(Nq), V(Nq, Ne), xiq_lob(p+1), wtq_lob(p+1))
     allocate(phihq(Nq, p+1), dphihq(Nq, p+1), in(p+1, Ne), ib(p+1, Ne), xin(p+1), xq1(Nq,1))
@@ -121,6 +122,7 @@ contains
         allocate(xiq_gj(size(xiq1),Lmin:Lmax))
         allocate(wtq_gj(size(wtq1),Lmin:Lmax))
         allocate(invS(size(H,1),size(H,2),Lmin:Lmax))
+        allocate(invST(size(H,1),size(H,2),Lmin:Lmax))
         allocate(rho1(Nq,Ne))
 
         ! Initialize focc and focc_idx
@@ -155,7 +157,7 @@ contains
         call solve_dirac_eigenproblem(Nb, Nq, Lmin2, Lmax, alpha, alpha_j, xe, xiq_gj, &
             xq, xq1, wtq_gj, V, Z, Vin, D, S2, H, lam2, rho, rho1, .false., fullc, &
             ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, lam, xq, &
-            E_dirac_shift, invS)
+            E_dirac_shift, invS, invST)
     end if
     end subroutine total_energy
 

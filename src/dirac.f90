@@ -26,7 +26,7 @@ contains
 subroutine solve_dirac_eigenproblem(Nb, Nq, Lmin, Lmax, alpha, alpha_j, xe, xiq_gj, &
     xq, xq1, wtq_gj, V, Z, Vin, D, S, H, lam, rho0, rho1, accurate_eigensolver, fullc, &
     ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, eng, xq2, E_dirac_shift, &
-    invS)
+    invS, invST)
 logical, intent(in) :: accurate_eigensolver
 integer, intent(in) :: Lmin, Lmax, Z, Nb, Nq
 real(dp), intent(in) :: alpha_j(Lmin:), alpha(Lmin:), Vin(:,:), xq(:,:)
@@ -40,6 +40,7 @@ real(dp), intent(out) :: V(:,:)
 integer, intent(out) :: idx
 real(dp), intent(in) :: E_dirac_shift
 real(dp), intent(inout) :: invS(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
+real(dp), intent(inout) :: invST(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
 real(dp) :: SU(size(S,1),size(S,2))
 integer :: kappa, i, info, j
 idx = 0
@@ -59,6 +60,7 @@ do kappa = Lmin, Lmax
     call dpotrf('U', size(invS,1), invS(:,:,kappa), size(invS,1), info)
     if (info /= 0) error stop
     invS(:,:,kappa) = inv(invS(:,:,kappa))
+    invST(:,:,kappa) = transpose(invS(:,:,kappa))
 end do
 do kappa = Lmin, Lmax
     if (kappa == 0) cycle
@@ -172,6 +174,7 @@ integer, allocatable :: no(:), lo(:), so(:), focc_idx(:,:)
 real(dp), allocatable :: fo_idx(:), fo(:)
 real(dp) :: T_s, E_ee, E_en, EE_xc
 real(dp), allocatable :: invS(:,:,:)
+real(dp), allocatable :: invST(:,:,:)
 
 
 integer :: nband, scf_max_iter, iter
@@ -247,6 +250,7 @@ allocate(D(n, n), lam(n), lam_tmp(n), fullc(Nn), uq(Nq,Ne), rho(Nq,Ne), Vee(Nq,N
     Vxc(Nq,Ne), exc(Nq,Ne), Vin(Nq,Ne), Vout(Nq,Ne), xq2(Nq, Ne), &
     rho0(Nq,Ne), rho1(Nq,Ne))
 allocate(invS(n,n,Lmin:Lmax))
+allocate(invST(n,n,Lmin:Lmax))
 
 nband = count(focc > 0)
 scf_max_iter = 100
@@ -296,7 +300,7 @@ contains
     E_dirac_shift = 0
     call solve_dirac_eigenproblem(Nb, Nq, Lmin, Lmax, alpha, alpha_j, xe, xiq_gj, &
         xq, xq1, wtq_gj, V, Z, Vin, D, S, H, lam, rho0, rho1, accurate_eigensolver, fullc, &
-        ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, eng, xq2, E_dirac_shift, invS)
+        ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, eng, xq2, E_dirac_shift, invS, invST)
     if ( .not. (size(eng) == idx) ) then
        error stop 'Size mismatch in energy array'
     end if
