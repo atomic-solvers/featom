@@ -41,7 +41,7 @@ integer, intent(out) :: idx
 real(dp), intent(in) :: E_dirac_shift
 real(dp), intent(inout) :: invS(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
 real(dp), intent(inout) :: invST(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
-real(dp) :: SU(size(S,1),size(S,2))
+!real(dp) :: SU(size(S,1),size(S,2))
 integer :: kappa, i, info, j
 idx = 0
 do kappa = Lmin, Lmax
@@ -81,7 +81,7 @@ do kappa = Lmin, Lmax
     ! we still need two seperate eigensolves for 1e-8 accuracy:
     !H = (H + transpose(H))/2
     !S = (S + transpose(S))/2
-    SU = invS(:,:,kappa)
+    !SU = invS(:,:,kappa)
     !do j = 1, size(SU,1)
     !    SU(j+1:,j) = 0
     !end do
@@ -111,9 +111,9 @@ do kappa = Lmin, Lmax
         ! We need to compute inv(U), which is upper triangular as well.
         !
         !call eigh(H, S, lam, D)
-        H = matmul(transpose(SU), matmul(H, SU))
+        H = matmul(invST(:,:,kappa), matmul(H, invS(:,:,kappa)))
         call eigh(H, lam, D)
-        D = matmul(SU, D)
+        D = matmul(invS(:,:,kappa), D)
     end if
 
     do i = 1, size(focc,1)
