@@ -89,7 +89,10 @@ do kappa = Lmin, Lmax
         !
         ! We need to compute inv(U), which is upper triangular as well.
         !
-        call eigh(H, S, lam, D)
+        !call eigh(H, S, lam, D)
+        H = matmul(transpose(SU), matmul(H, SU))
+        call eigh(H, lam, D)
+        D = matmul(SU, D)
     end if
 
     do i = 1, size(focc,1)
