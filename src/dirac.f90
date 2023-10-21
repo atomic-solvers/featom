@@ -72,6 +72,22 @@ do kappa = Lmin, Lmax
         call eigh(H, S, lam)
         call eigh(H, S, lam_tmp, D)
     else
+        ! H z = l S z
+        !
+        ! We substitute S = U^T U:
+        !
+        ! H z = l U^T U z
+        !
+        ! Then we multiply by inv(U^T)=inv(U)^T from the left:
+        !
+        ! inv(U)^T H z = l U z
+        !
+        ! we set y = U z, so z = inv(U) y:
+        !
+        ! inv(U)^T H inv(U) y = l y
+        !
+        ! We need to compute inv(U), which is upper triangular as well.
+        !
         call eigh(H, S, lam, D)
     end if
 
