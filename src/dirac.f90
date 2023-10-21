@@ -42,6 +42,7 @@ integer, intent(out) :: idx
 real(dp), intent(in) :: E_dirac_shift
 real(dp), intent(in) :: invS(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
 real(dp), intent(in) :: invST(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
+real(dp) :: D2(size(D,1),size(D,2)), lam2(size(lam))
 integer :: kappa, i
 idx = 0
 do kappa = Lmin, Lmax
@@ -84,14 +85,20 @@ do kappa = Lmin, Lmax
         !
         ! We need to compute inv(U), which is upper triangular as well.
         !
+        ! Base: 219ms
+        !
+        ! 207ms
         !call eigh(H, S, lam, D)
 
         ! TODO: Could only operate on triangles here
+        ! 149ms
         H = matmul(invST(:,:,kappa), matmul(H, invS(:,:,kappa)))
         ! TODO: only compute 7 eigenvalues here
-        call solve_eig_irange(H, 1, 7, lam, D)
+        ! 302ms
+        call solve_eig_irange(H, 1, 7, lam, D2)
         ! TODO: only lowest 7 are needed
-        D(:,:7) = matmul(invS(:,:,kappa), D(:,:7))
+        ! 10ms
+        D(:,:7) = matmul(invS(:,:,kappa), D2(:,:7))
     end if
 
     do i = 1, size(focc,1)
