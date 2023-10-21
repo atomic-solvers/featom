@@ -17,6 +17,7 @@ use states, only: get_atomic_states_nonrel_focc, get_atomic_states_rel_focc, &
 use energies, only: thomas_fermi_potential
 use iso_c_binding, only: c_double, c_int
 use lapack, only: dpotrf
+use solvers, only: solve_eig_irange
 implicit none
 private
 public solve_dirac, csolve_dirac, solve_dirac_eigenproblem
@@ -88,7 +89,7 @@ do kappa = Lmin, Lmax
         ! TODO: Could only operate on triangles here
         H = matmul(invST(:,:,kappa), matmul(H, invS(:,:,kappa)))
         ! TODO: only compute 7 eigenvalues here
-        call eigh(H, lam, D)
+        call solve_eig_irange(H, 1, 7, lam, D)
         ! TODO: only lowest 7 are needed
         D(:,:7) = matmul(invS(:,:,kappa), D(:,:7))
     end if
