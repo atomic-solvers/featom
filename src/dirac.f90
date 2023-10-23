@@ -16,7 +16,7 @@ use states, only: get_atomic_states_nonrel_focc, get_atomic_states_rel_focc, &
     nlsf2focc, get_atomic_states_rel, nlf2focc, get_atomic_states_nonrel
 use energies, only: thomas_fermi_potential
 use iso_c_binding, only: c_double, c_int
-use lapack, only: dpotrf, dsygst
+use lapack, only: dpotrf, dsygst, DTRSM
 use solvers, only: solve_eig_irange
 implicit none
 private
