@@ -16,7 +16,7 @@ use states, only: get_atomic_states_nonrel_focc, get_atomic_states_rel_focc, &
     nlsf2focc, get_atomic_states_rel, nlf2focc, get_atomic_states_nonrel
 use energies, only: thomas_fermi_potential
 use iso_c_binding, only: c_double, c_int
-use lapack, only: dpotrf
+use lapack, only: dpotrf, dsygst
 use solvers, only: solve_eig_irange
 implicit none
 private
@@ -43,7 +43,7 @@ real(dp), intent(in) :: E_dirac_shift
 real(dp), intent(in) :: invS(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
 real(dp), intent(in) :: invST(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
 real(dp) :: D2(size(D,1),size(D,2)), lam2(size(lam))
-integer :: kappa, i
+integer :: kappa, i, info
 idx = 0
 do kappa = Lmin, Lmax
     if (kappa == 0) cycle
@@ -92,7 +92,9 @@ do kappa = Lmin, Lmax
 
         ! TODO: Could only operate on triangles here
         ! 149ms
-        H = matmul(invST(:,:,kappa), matmul(H, invS(:,:,kappa)))
+        !H = matmul(invST(:,:,kappa), matmul(H, invS(:,:,kappa)))
+        call dsygst( 1, "U", size(invS,1), H, size(invS,1), invST(:,:,kappa), size(invS,1), info )
+        if (info /= 0) error stop
         ! TODO: only compute 7 eigenvalues here
         ! 302ms
         call solve_eig_irange(H, 1, 7, lam, D2)
@@ -252,8 +254,9 @@ do kappa = Lmin, Lmax
     end do
     call dpotrf('U', size(invS,1), invS(:,:,kappa), size(invS,1), info)
     if (info /= 0) error stop
+    ! TODO: now it's not inverted
+    invST(:,:,kappa) = invS(:,:,kappa)
     invS(:,:,kappa) = inv(invS(:,:,kappa))
-    invST(:,:,kappa) = transpose(invS(:,:,kappa))
 end do
 
 nband = count(focc > 0)

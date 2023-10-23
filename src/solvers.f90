@@ -39,7 +39,7 @@ end if
 allocate(work(lwork),iwork(5*n),ifail(n))
 !abstol=2*dlamch('S')
 abstol=1e-4
-call dsyevx('V','I','L',n,Am,n,0.0_dp,0.0_dp,l,h,abstol,m, &
+call dsyevx('V','I','U',n,Am,n,0.0_dp,0.0_dp,l,h,abstol,m, &
     lam,c,n,work,lwork,iwork,ifail,info)
 if (info/=0) then
     print *, "dsyevx returned info =", info

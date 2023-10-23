@@ -120,6 +120,13 @@ interface
     REAL(dp)           A( LDA, * ), WORK( * )         
     END SUBROUTINE                                                  
 
+    SUBROUTINE DSYGST( ITYPE, UPLO, N, A, LDA, B, LDB, INFO )
+    import :: dp
+    CHARACTER          UPLO
+    INTEGER            INFO, ITYPE, LDA, LDB, N
+    REAL(dp)           A( LDA, * ), B( LDB, * )
+    END SUBROUTINE
+
 
 end interface
 
