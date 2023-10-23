@@ -19,7 +19,7 @@ integer n
 integer lwork, info, m
 integer, allocatable:: iwork(:), ifail(:)
 real(dp) abstol
-real(dp), allocatable:: Amt(:,:), work(:)
+real(dp), allocatable:: work(:)
 
 ! solve
 n=size(Am,1)
@@ -36,10 +36,10 @@ end if
 if ( .not. (size(lam) == n) ) then
    error stop 'Wrong size for the eigenvalues'
 end if
-allocate(Amt(n,n),work(lwork),iwork(5*n),ifail(n))
-Amt=Am; ! Amt temporaries overwritten by dsyevx
-abstol=2*dlamch('S')
-call dsyevx('V','I','L',n,Amt,n,0.0_dp,0.0_dp,l,h,abstol,m, &
+allocate(work(lwork),iwork(5*n),ifail(n))
+!abstol=2*dlamch('S')
+abstol=1e-4
+call dsyevx('V','I','U',n,Am,n,0.0_dp,0.0_dp,l,h,abstol,m, &
     lam,c,n,work,lwork,iwork,ifail,info)
 if (info/=0) then
     print *, "dsyevx returned info =", info
