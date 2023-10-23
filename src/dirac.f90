@@ -101,7 +101,9 @@ do kappa = Lmin, Lmax
         call solve_eig_irange(H, 1, 7, lam, D2)
         ! TODO: only lowest 7 are needed
         ! 10ms
-        D(:,:7) = matmul(invS(:,:,kappa), D2(:,:7))
+        ! Instead of the matmul operation:
+        D(:,:7) = D2(:,:7)
+        CALL DTRSM('Left', 'Upper', 'No Trans', 'Non-unit', size(D,1), 7, 1.0d0, invST(:,:,kappa), size(D,1), D(:,:7), size(D,1))
     end if
 
     do i = 1, size(focc,1)

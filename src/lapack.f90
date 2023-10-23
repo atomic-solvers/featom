@@ -96,6 +96,14 @@ interface
     REAL(dp)           A( LDA, * )
     END SUBROUTINE
 
+    SUBROUTINE DTRSM( SIDE, UPLO, TRANSA, DIAG, M, N, ALPHA, A, LDA, B, &
+                      LDB )
+    import :: dp
+    CHARACTER          DIAG, SIDE, TRANSA, UPLO
+    INTEGER            LDA, LDB, M, N
+    REAL(dp)           ALPHA, A( LDA, * ), B( LDB, * )
+    END SUBROUTINE
+
     REAL(dp) FUNCTION DLAMCH( CMACH )
     import :: dp
     CHARACTER          CMACH
