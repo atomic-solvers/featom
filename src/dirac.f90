@@ -93,10 +93,11 @@ do kappa = Lmin, Lmax
         ! TODO: Could only operate on triangles here
         ! 149ms
         !H = matmul(invST(:,:,kappa), matmul(H, invS(:,:,kappa)))
+        ! 33ms
         call dsygst( 1, "U", size(invS,1), H, size(invS,1), invST(:,:,kappa), size(invS,1), info )
         if (info /= 0) error stop
         ! TODO: only compute 7 eigenvalues here
-        ! 302ms
+        ! 302ms with matmul, 270ms with dsygst
         call solve_eig_irange(H, 1, 7, lam, D2)
         ! TODO: only lowest 7 are needed
         ! 10ms
