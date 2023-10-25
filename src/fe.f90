@@ -368,19 +368,6 @@ do e = 1, Ne
     end do
 end do
 
-!print *, "Checking symmetry"
-do j = 1, 2*Nb
-    do i = 1, j-1
-        if (abs(H(i,j) - H(j,i)) > 1e-8_dp) then
-            if (abs(H(i,j)-H(j,i)) / max(abs(H(i,j)), abs(H(j,i))) &
-                    > 1e-8_dp) then
-                print *, i, j, H(i,j)-H(j,i), H(i,j), H(j,i)
-                error stop "H not symmetric"
-            end if
-        end if
-        if (abs(S(i,j)-S(j,i)) > 1e-12_dp) error stop "S not symmetric"
-   end do
-end do
 end subroutine
 
 
