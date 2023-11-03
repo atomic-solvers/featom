@@ -62,6 +62,7 @@ do kappa = Lmin, Lmax
     if (accurate_eigensolver) then
         call eigh(H, S, lam)
         call eigh(H, S, lam_tmp, D)
+        stop
     else
         call eigh(H, S, lam, D)
     end if
@@ -69,17 +70,17 @@ do kappa = Lmin, Lmax
     do i = 1, size(focc,1)
         if (focc(i,kappa) < tiny(1._dp)) cycle
 
-        call c2fullc2(in, ib, D(:Nb,i), fullc)
-        call fe2quad(xe, xin, xiq, in, fullc, uq)
-        rho0 = rho0 - focc(i,kappa)*uq**2 * xq**alpha_j(kappa)
-        call fe2quad(xe, xin, xiq_gj(:,-1), in, fullc, uq)
-        rho1(:,1) = rho1(:,1) - focc(i,kappa)*uq(:,1)**2 * xq2(:,1)**alpha_j(kappa)
-
-        call c2fullc2(in, ib, D(Nb+1:,i), fullc)
-        call fe2quad(xe, xin, xiq, in, fullc, uq)
-        rho0 = rho0 - focc(i,kappa)*uq**2 * xq**alpha_j(kappa)
-        call fe2quad(xe, xin, xiq_gj(:,-1), in, fullc, uq)
-        rho1(:,1) = rho1(:,1) - focc(i,kappa)*uq(:,1)**2 * xq2(:,1)**alpha_j(kappa)
+        !call c2fullc2(in, ib, D(:Nb,i), fullc)
+        !call fe2quad(xe, xin, xiq, in, fullc, uq)
+        !rho0 = rho0 - focc(i,kappa)*uq**2 * xq**alpha_j(kappa)
+        !call fe2quad(xe, xin, xiq_gj(:,-1), in, fullc, uq)
+        !rho1(:,1) = rho1(:,1) - focc(i,kappa)*uq(:,1)**2 * xq2(:,1)**alpha_j(kappa)
+!
+!        call c2fullc2(in, ib, D(Nb+1:,i), fullc)
+!        call fe2quad(xe, xin, xiq, in, fullc, uq)
+!        rho0 = rho0 - focc(i,kappa)*uq**2 * xq**alpha_j(kappa)
+!        call fe2quad(xe, xin, xiq_gj(:,-1), in, fullc, uq)
+!        rho1(:,1) = rho1(:,1) - focc(i,kappa)*uq(:,1)**2 * xq2(:,1)**alpha_j(kappa)
 
         idx = idx + 1
         eng(focc_idx(i,kappa)) = sqrt(lam(i)) - c**2 + E_dirac_shift
