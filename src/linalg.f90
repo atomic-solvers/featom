@@ -43,7 +43,7 @@ contains
     iu = 7
     M = iu-il+1
     allocate(z(n,M))
-    abstol = 1e-4_dp
+    abstol = 1e-3_dp
     call dsygvx(1,'V','I','L',n,Am,n,Bm,n, &
         0._dp, 0._dp, 1, 7, abstol, M, lam, c, n, work, &
         lwork, iwork, ifail, info)
