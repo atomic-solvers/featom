@@ -157,14 +157,6 @@ do i = 1, size(energies)
     end if
 end do
 
-print *, "Eigenfunctions saved in data_coulomb_dirac.txt"
-open(newunit=u, file="data_coulomb_dirac.txt", status="replace")
-write(u, *) xq
-do i = 1, size(energies)
-    write(u, *) eigfn(:,:,i)
-end do
-close(u)
-
 contains
 
     real(dp) function E_nl(c, n, l, Z, relat)
