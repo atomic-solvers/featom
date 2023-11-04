@@ -37,7 +37,7 @@ real(dp), intent(inout) :: D(:,:), S(:,:), H(:,:), lam(:), lam_tmp(:), eng(:)
 real(dp), intent(out) :: V(:,:)
 integer, intent(out) :: idx
 real(dp), intent(in) :: E_dirac_shift
-integer :: kappa, i
+integer :: kappa, i, nlam
 idx = 0
 do kappa = Lmin, Lmax
     if (kappa == 0) cycle
@@ -61,13 +61,15 @@ do kappa = Lmin, Lmax
 
     if (accurate_eigensolver) then
         call eigh(H, S, lam)
-        call eigh(H, S, lam_tmp, D)
+        call eigh(H, S, lam_tmp, D, 7)
     else
-        call eigh(H, S, lam, D)
+        nlam = count(focc(:,kappa) > tiny(1._dp))
+        call eigh(H, S, lam, D, nlam)
     end if
 
     do i = 1, size(focc,1)
         if (focc(i,kappa) < tiny(1._dp)) cycle
+        !print *, "lam(i): i =", i, nlam
 
         call c2fullc2(in, ib, D(:Nb,i), fullc)
         call fe2quad(xe, xin, xiq, in, fullc, uq)
