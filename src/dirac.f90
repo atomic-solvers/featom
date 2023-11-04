@@ -69,6 +69,7 @@ do kappa = Lmin, Lmax
 
     do i = 1, size(focc,1)
         if (focc(i,kappa) < tiny(1._dp)) cycle
+        !print *, "i=", i
 
         !call c2fullc2(in, ib, D(:Nb,i), fullc)
         !call fe2quad(xe, xin, xiq, in, fullc, uq)
@@ -200,6 +201,7 @@ allocate(D(n, n), lam(n), lam_tmp(n), fullc(Nn), uq(Nq,Ne), rho(Nq,Ne), Vee(Nq,N
     rho0(Nq,Ne), rho1(Nq,Ne))
 
 nband = count(focc > 0)
+!print *, "nband=", nband
 scf_max_iter = 100
 scf_alpha = 0.4_dp
 scf_L2_eps = 1e-4_dp

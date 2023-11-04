@@ -40,12 +40,12 @@ contains
     allocate(ifail(n))
     !call dsygvd(1,'V','L',n,c,n,Bmt,n,lam,work,lwork,iwork,liwork,info)
     il = 1
-    iu = 7
+    iu = 8
     M = iu-il+1
     allocate(z(n,M))
     abstol = 1e-3_dp
     call dsygvx(1,'V','I','L',n,Am,n,Bm,n, &
-        0._dp, 0._dp, 1, 7, abstol, M, lam, c, n, work, &
+        0._dp, 0._dp, 1, 8, abstol, M, lam, c, n, work, &
         lwork, iwork, ifail, info)
     !SUBROUTINE DSYGVD( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK, &
     !                   LWORK, IWORK, LIWORK, INFO )

@@ -65,7 +65,7 @@ contains
     allocate(H(DOFS, DOFS), S(DOFS), DSQ(DOFS), uq(Nq,Ne))
     allocate(D(DOFS, DOFS), lam2(DOFS), rho(Nq,Ne), fullc(Nn))
     if (dirac_int == 1) then
-        allocate(lam(47))
+        allocate(lam(49))
         allocate(eigfn(Nq, Ne, 49))
     else
         allocate(lam(28))
@@ -115,18 +115,18 @@ contains
             end do
         end do
     else
-        Lmin2 = -6
-        Lmax = 5
+        Lmin2 = -7
+        Lmax = 6
         allocate(xiq_gj(size(xiq1),Lmin:Lmax))
         allocate(wtq_gj(size(wtq1),Lmin:Lmax))
         allocate(rho1(Nq,Ne))
 
         ! Initialize focc and focc_idx
-        allocate(focc(max(Lmax,abs(Lmin2))+1,Lmin2:Lmax))
-        allocate(focc_idx(max(Lmax,abs(Lmin2))+1,Lmin2:Lmax))
+        allocate(focc(max(Lmax,abs(Lmin2))+2,Lmin2:Lmax))
+        allocate(focc_idx(max(Lmax,abs(Lmin2))+2,Lmin2:Lmax))
         focc = 0
         focc_idx = 0
-        do kappa = Lmin2, Lmax
+        end: do kappa = Lmin2, Lmax
             if (kappa == 0) cycle
             if (alpha_j(kappa) > -1) then
                 call gauss_jacobi_gw(Nq, 0.0_dp, alpha_j(kappa), xiq1, wtq1)
@@ -138,7 +138,7 @@ contains
             else
                 l = kappa
             end if
-            do k = 1, 7-l
+            do k = 1, 8-l
                 ind = (kappa+1)*(kappa+1)+(k-1)*(2*kappa+1)+(k-1)*(k-2)
                 if (kappa < 0) then
                     ind = ind + 2*k-2+(4*k-2)*(-1-kappa)
@@ -146,10 +146,12 @@ contains
                 if (kappa == -1) then
                     ind = ind + 1
                 end if
+                if (ind > 49) cycle
+                !print *, kappa, l, k, ind
                 focc_idx(k,kappa) = ind
                 focc(k,kappa) = 1
             end do
-        end do
+        end do end
         call solve_dirac_eigenproblem(Nb, Nq, Lmin2, Lmax, alpha, alpha_j, xe, xiq_gj, &
             xq, xq1, wtq_gj, V, Z, Vin, D, S2, H, lam2, rho, rho1, .false., fullc, &
             ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, lam, xq, &
