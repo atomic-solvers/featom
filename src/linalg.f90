@@ -13,7 +13,7 @@ module linalg
 
 contains
 
-  subroutine deigh_generalized(Am, Bm, lam, c)
+  subroutine deigh_generalized(Am, Bm, lam, c, nlam)
     ! solves generalized eigen value problem for all eigenvalues and eigenvectors
     ! Am must by symmetric, Bm symmetric positive definite.
     ! Only the lower triangular part of Am and Bm is used.
@@ -21,6 +21,7 @@ contains
     real(dp), intent(in) :: Bm(:,:)   ! RHS matrix: Am c = lam Bm c
     real(dp), intent(out) :: lam(:)   ! eigenvalues: Am c = lam Bm c
     real(dp), intent(out) :: c(:,:)   ! eigenvectors: Am c = lam Bm c; c(i,j) = ith component of jth vec.
+    integer, intent(in) :: nlam
     integer :: n
     ! lapack variables
     integer :: lwork, liwork, info
@@ -40,12 +41,12 @@ contains
     allocate(ifail(n))
     !call dsygvd(1,'V','L',n,c,n,Bmt,n,lam,work,lwork,iwork,liwork,info)
     il = 1
-    iu = 8
+    iu = nlam
     M = iu-il+1
     allocate(z(n,M))
     abstol = 1e-3_dp
     call dsygvx(1,'V','I','L',n,Am,n,Bm,n, &
-        0._dp, 0._dp, 1, 8, abstol, M, lam, c, n, work, &
+        0._dp, 0._dp, il, iu, abstol, M, lam, c, n, work, &
         lwork, iwork, ifail, info)
     !SUBROUTINE DSYGVD( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK, &
     !                   LWORK, IWORK, LIWORK, INFO )
