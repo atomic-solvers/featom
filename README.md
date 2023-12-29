@@ -10,7 +10,7 @@ been used for the Dirac equation, which eliminates spurious states.
 Detailed description of methods, convergence studies and implementation details
 may be found in the following article:
 
-> Čertík, Ondřej, et al. High-Order Finite Element Method for Atomic Structure Calculations. 2023. https://www.sciencedirect.com/science/article/pii/S001046552300396X, http://arxiv.org/abs/2307.05856.
+> Čertík, Ondřej, et al. High-Order Finite Element Method for Atomic Structure Calculations. Computer Physics Communications, Volume 297, 2024, ISSN 0010-4655. https://www.sciencedirect.com/science/article/pii/S001046552300396X, http://arxiv.org/abs/2307.05856.
 
 ## Accuracy
 
