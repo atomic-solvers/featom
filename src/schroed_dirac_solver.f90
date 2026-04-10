@@ -64,6 +64,7 @@ contains
 
     allocate(H(DOFS, DOFS), S(DOFS), DSQ(DOFS), uq(Nq,Ne))
     allocate(D(DOFS, DOFS), lam2(DOFS), rho(Nq,Ne), fullc(Nn))
+    allocate(lam_tmp(DOFS))
     if (dirac_int == 1) then
         allocate(lam(47))
         allocate(eigfn(Nq, Ne, 49))
