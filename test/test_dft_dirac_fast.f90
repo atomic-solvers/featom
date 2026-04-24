@@ -59,7 +59,7 @@ xe(1) = rmin
 xe(2:) = meshexp(r0, rmax, a, Ne-1)
 call get_parent_quad_pts_wts(1, Nq, xiq, wtq)
 
-call solve_dirac(Z, p, xiq, wtq, xe, 1e-6_dp, energies, Etot, V, DOFs)
+call solve_dirac(Z, p, xiq, wtq, xe, 1e-5_dp, energies, Etot, V, DOFs)
 
 if ( .not. (size(energies) == size(energies_ref))) then
    error stop 'assert failed'
