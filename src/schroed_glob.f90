@@ -325,4 +325,4 @@ call solve_schroed(Z, p, xiq, wtq, xe, eps, energies2, Etot, V, DOFs)
 energies = energies2
 end subroutine
 
-end module
+end module schroed_glob

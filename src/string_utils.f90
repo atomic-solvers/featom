@@ -58,4 +58,4 @@ character(len=str_real_len(r, "(f0." // str_int(n) // ")")) :: s
 write(s, "(f0." // str_int(n) // ")") r
 end function
 
-end module
+end module string_utils

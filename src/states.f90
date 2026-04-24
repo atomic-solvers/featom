@@ -882,4 +882,4 @@ integer(c_int), intent(in) :: Z
 get_num_atomic_states_nonrel = get_atom_orb_nonrel(Z)
 end function
 
-end module
+end module states

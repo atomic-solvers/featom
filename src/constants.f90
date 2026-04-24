@@ -27,4 +27,4 @@ real(dp), parameter :: c_2006 = 137.035999679_dp
 real(dp), parameter :: c_2002 = 137.03599911_dp
 real(dp), parameter :: c_1998 = 137.03599976_dp
 real(dp), parameter :: c_1986 = 137.0359895_dp ! To compare with dftatom
-end module
+end module constants

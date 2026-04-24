@@ -37,4 +37,4 @@ read(arg, '(i4)') p_or_Ne
 
 call run_convergence(study_type, dirac_int, p_or_Ne, ".")
 
-end program
+end program conv
