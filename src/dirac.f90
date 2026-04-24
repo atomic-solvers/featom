@@ -5,7 +5,7 @@ use mesh, only: meshexp
 use feutils, only: define_connect, get_quad_pts, get_parent_quad_pts_wts, &
         get_parent_nodes, phih, dphih, c2fullc2, fe2quad_core, get_nodes, &
         integrate, proj_fn, phih_array, integrate2, fe2quad
-use linalg, only: eigh
+use linalg, only: eigh, inv
 use gjp_gw, only: gauss_jacobi_gw
 use fe, only: assemble_radial_SH, assemble_radial_dirac_SH
 use constants, only: pi, c => c_1986
@@ -16,6 +16,8 @@ use states, only: get_atomic_states_nonrel_focc, get_atomic_states_rel_focc, &
     nlsf2focc, get_atomic_states_rel, nlf2focc, get_atomic_states_nonrel
 use energies, only: thomas_fermi_potential
 use iso_c_binding, only: c_double, c_int
+use lapack, only: dpotrf, dsygst, DTRSM
+use solvers, only: solve_eig_irange
 implicit none
 private
 public solve_dirac, csolve_dirac, solve_dirac_eigenproblem
@@ -24,7 +26,8 @@ contains
 
 subroutine solve_dirac_eigenproblem(Nb, Nq, Lmin, Lmax, alpha, alpha_j, xe, xiq_gj, &
     xq, xq1, wtq_gj, V, Z, Vin, D, S, H, lam, rho0, rho1, accurate_eigensolver, fullc, &
-    ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, eng, xq2, E_dirac_shift)
+    ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, eng, xq2, E_dirac_shift, &
+    invS, invST)
 logical, intent(in) :: accurate_eigensolver
 integer, intent(in) :: Lmin, Lmax, Z, Nb, Nq
 real(dp), intent(in) :: alpha_j(Lmin:), alpha(Lmin:), Vin(:,:), xq(:,:)
@@ -37,7 +40,10 @@ real(dp), intent(inout) :: D(:,:), S(:,:), H(:,:), lam(:), lam_tmp(:), eng(:)
 real(dp), intent(out) :: V(:,:)
 integer, intent(out) :: idx
 real(dp), intent(in) :: E_dirac_shift
-integer :: kappa, i
+real(dp), intent(in) :: invS(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
+real(dp), intent(in) :: invST(:,:,Lmin:) ! invS(n,n,Lmin:Lmax)
+real(dp) :: D2(size(D,1),size(D,2)), lam2(size(lam))
+integer :: kappa, i, info
 idx = 0
 do kappa = Lmin, Lmax
     if (kappa == 0) cycle
@@ -63,7 +69,41 @@ do kappa = Lmin, Lmax
         call eigh(H, S, lam)
         call eigh(H, S, lam_tmp, D)
     else
-        call eigh(H, S, lam, D)
+        ! H z = l S z
+        !
+        ! We substitute S = U^T U:
+        !
+        ! H z = l U^T U z
+        !
+        ! Then we multiply by inv(U^T)=inv(U)^T from the left:
+        !
+        ! inv(U)^T H z = l U z
+        !
+        ! we set y = U z, so z = inv(U) y:
+        !
+        ! inv(U)^T H inv(U) y = l y
+        !
+        ! We need to compute inv(U), which is upper triangular as well.
+        !
+        ! Base: 219ms
+        !
+        ! 207ms
+        !call eigh(H, S, lam, D)
+
+        ! TODO: Could only operate on triangles here
+        ! 149ms
+        !H = matmul(invST(:,:,kappa), matmul(H, invS(:,:,kappa)))
+        ! 33ms
+        call dsygst( 1, "U", size(invS,1), H, size(invS,1), invST(:,:,kappa), size(invS,1), info )
+        if (info /= 0) error stop
+        ! TODO: only compute 7 eigenvalues here
+        ! 302ms with matmul, 270ms with dsygst
+        call solve_eig_irange(H, 1, 7, lam, D2)
+        ! TODO: only lowest 7 are needed
+        ! 10ms
+        ! Instead of the matmul operation:
+        D(:,:7) = D2(:,:7)
+        CALL DTRSM('Left', 'Upper', 'No Trans', 'Non-unit', size(D,1), 7, 1.0d0, invST(:,:,kappa), size(D,1), D(:,:7), size(D,1))
     end if
 
     do i = 1, size(focc,1)
@@ -123,6 +163,9 @@ integer :: mixing_scheme
 integer, allocatable :: no(:), lo(:), so(:), focc_idx(:,:)
 real(dp), allocatable :: fo_idx(:), fo(:)
 real(dp) :: T_s, E_ee, E_en, EE_xc
+real(dp), allocatable :: invS(:,:,:)
+real(dp), allocatable :: invST(:,:,:)
+integer :: info, j
 
 
 integer :: nband, scf_max_iter, iter
@@ -197,6 +240,27 @@ allocate(H(n, n), S(n, n))
 allocate(D(n, n), lam(n), lam_tmp(n), fullc(Nn), uq(Nq,Ne), rho(Nq,Ne), Vee(Nq,Ne), &
     Vxc(Nq,Ne), exc(Nq,Ne), Vin(Nq,Ne), Vout(Nq,Ne), xq2(Nq, Ne), &
     rho0(Nq,Ne), rho1(Nq,Ne))
+allocate(invS(n,n,Lmin:Lmax))
+allocate(invST(n,n,Lmin:Lmax))
+do kappa = Lmin, Lmax
+    if (kappa == 0) cycle
+    !print *, "Calculating kappa =", kappa
+    if (alpha_j(kappa) > -1) then
+        call get_quad_pts(xe(:2), xiq_gj(:, kappa), xq1)
+        call proj_fn(Nq-1, xe(:2), xiq_gj(:,-1), wtq_gj(:,-1), xiq_gj(:, kappa), Vin, V(:,:1))
+    endif
+
+    call assemble_radial_dirac_SH(V, kappa, xin, xe, ib, xiq, wtq, &
+        xiq_gj(:, kappa), wtq_gj(:, kappa), alpha(kappa), alpha_j(kappa), c, invS(:,:,kappa), H)
+    do j = 1, size(invS,1)
+        invS(j+1:,j,kappa) = 0
+    end do
+    call dpotrf('U', size(invS,1), invS(:,:,kappa), size(invS,1), info)
+    if (info /= 0) error stop
+    ! TODO: now it's not inverted
+    invST(:,:,kappa) = invS(:,:,kappa)
+    invS(:,:,kappa) = inv(invS(:,:,kappa))
+end do
 
 nband = count(focc > 0)
 scf_max_iter = 100
@@ -234,7 +298,7 @@ contains
     real(dp) :: E_dirac_shift
     integer :: idx
     logical :: accurate_eigensolver
-    accurate_eigensolver = .true.
+    accurate_eigensolver = .false.
     iter = iter + 1
     print *, "SCF iteration:", iter
     Vin = reshape(x, shape(Vin))
@@ -246,7 +310,7 @@ contains
     E_dirac_shift = 0
     call solve_dirac_eigenproblem(Nb, Nq, Lmin, Lmax, alpha, alpha_j, xe, xiq_gj, &
         xq, xq1, wtq_gj, V, Z, Vin, D, S, H, lam, rho0, rho1, accurate_eigensolver, fullc, &
-        ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, eng, xq2, E_dirac_shift)
+        ib, in, idx, lam_tmp, uq, wtq, xin, xiq, focc, focc_idx, eng, xq2, E_dirac_shift, invS, invST)
     if ( .not. (size(eng) == idx) ) then
        error stop 'Size mismatch in energy array'
     end if

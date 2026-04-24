@@ -1,9 +1,9 @@
 module linalg
   use types, only: dp
-  use lapack, only: dsyevd, dsygvd, dgesv
+  use lapack, only: dsyevd, dsygvd, dgesv, dsygvx, ilaenv, dgetrf, dgetri
   implicit none
   private
-  public eigh, solve
+  public eigh, solve, inv
 
   interface eigh
      module procedure deigh_generalized
@@ -24,8 +24,10 @@ contains
     integer :: n
     ! lapack variables
     integer :: lwork, liwork, info
-    integer, allocatable :: iwork(:)
-    real(dp), allocatable :: Bmt(:,:), work(:)
+    integer, allocatable :: iwork(:), ifail(:)
+    real(dp), allocatable :: Bmt(:,:), work(:), Z(:,:), Amt(:,:)
+    integer :: il, iu, M
+    real(dp) :: abstol
 
     ! solve
     n = size(Am,1)
@@ -34,9 +36,22 @@ contains
     call assert_shape(c, [n, n], "eigh", "c")
     lwork = 1 + 6*n + 2*n**2
     liwork = 3 + 5*n
-    allocate(Bmt(n,n), work(lwork), iwork(liwork))
-    c = Am; Bmt = Bm  ! Bmt temporaries overwritten by dsygvd
-    call dsygvd(1,'V','L',n,c,n,Bmt,n,lam,work,lwork,iwork,liwork,info)
+    allocate(work(lwork), iwork(liwork))
+    allocate(ifail(n))
+    !call dsygvd(1,'V','L',n,c,n,Bmt,n,lam,work,lwork,iwork,liwork,info)
+    il = 1
+    iu = 7
+    M = iu-il+1
+    allocate(z(n,M))
+    abstol = 1e-4_dp
+    call dsygvx(1,'V','I','L',n,Am,n,Bm,n, &
+        0._dp, 0._dp, 1, 7, abstol, M, lam, c, n, work, &
+        lwork, iwork, ifail, info)
+    !SUBROUTINE DSYGVD( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK, &
+    !                   LWORK, IWORK, LIWORK, INFO )
+    !SUBROUTINE DSYGVX( ITYPE, JOBZ, RANGE, UPLO, N, A, LDA, B, LDB, &
+    !                   VL, VU, IL, IU, ABSTOL, M, W, Z, LDZ, WORK, &
+    !                   LWORK, IWORK, IFAIL, INFO )
     if (info /= 0) then
        print *, "dsygvd returned info =", info
        if (info < 0) then
@@ -172,5 +187,53 @@ contains
        error stop "Aborting due to illegal matrix operation"
     end if
   end subroutine assert_shape
+
+  function inv(Am) result(Bm)                 
+    real(dp), intent(in) :: Am(:,:)  ! matrix to be inverted
+    real(dp) :: Bm(size(Am, 1), size(Am, 2))   ! Bm = inv(Am)
+    real(dp), allocatable :: Amt(:,:), work(:)  ! temporary work arrays
+                   
+    ! LAPACK variables:
+    integer ::  info, lda, n, lwork, nb                                   
+    integer, allocatable :: ipiv(:)
+                            
+    ! use LAPACK's dgetrf and dgetri
+    n = size(Am(1, :))
+    call assert_shape(Am, [n, n], "inv", "Am")
+    lda = n                 
+    nb = ilaenv(1, 'DGETRI', "UN", n, -1, -1, -1)  ! TODO: check UN param
+    lwork = n*nb                
+    if (nb < 1) nb = max(1, n)
+    allocate(Amt(n,n), work(lwork), ipiv(n))     
+    Amt = Am   
+    call dgetrf(n, n, Amt, lda, ipiv, info)
+    if(info /= 0) then    
+       print *, "dgetrf returned info =", info
+       if (info < 0) then
+          print *, "the", -info, "-th argument had an illegal value"
+       else   
+          print *, "U(", info, ",", info, ") is exactly zero; The factorization"
+          print *, "has been completed, but the factor U is exactly"
+          print *, "singular, and division by zero will occur if it is used"
+          print *, "to solve a system of equations."
+       end if
+       error stop 'inv: dgetrf error'
+    end if      
+                           
+    call dgetri(n, Amt, n, ipiv, work, lwork, info)
+    if (info /= 0) then
+       print *, "dgetri returned info =", info
+       if (info < 0) then
+          print *, "the", -info, "-th argument had an illegal value"
+       else
+          print *, "U(", info, ",", info, ") is exactly zero; the matrix is"
+          print *, "singular and its inverse could not be computed."
+       end if
+       error stop 'inv: dgetri error'
+    end if
+    Bm = Amt
+
+  end function
+
 
 end module linalg
