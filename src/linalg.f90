@@ -1,6 +1,6 @@
 module linalg
   use types, only: dp
-  use lapack, only: dsyevd, dsygvd, dgesv
+  use lapack, only: dsyevd, dsygvd, dgesv, dsygvx
   implicit none
   private
   public eigh, solve
@@ -24,8 +24,10 @@ contains
     integer :: n
     ! lapack variables
     integer :: lwork, liwork, info
-    integer, allocatable :: iwork(:)
-    real(dp), allocatable :: Bmt(:,:), work(:)
+    integer, allocatable :: iwork(:), ifail(:)
+    real(dp), allocatable :: Bmt(:,:), work(:), Z(:,:), Amt(:,:)
+    integer :: il, iu, M
+    real(dp) :: abstol
 
     ! solve
     n = size(Am,1)
@@ -34,9 +36,22 @@ contains
     call assert_shape(c, [n, n], "eigh", "c")
     lwork = 1 + 6*n + 2*n**2
     liwork = 3 + 5*n
-    allocate(Bmt(n,n), work(lwork), iwork(liwork))
-    c = Am; Bmt = Bm  ! Bmt temporaries overwritten by dsygvd
-    call dsygvd(1,'V','L',n,c,n,Bmt,n,lam,work,lwork,iwork,liwork,info)
+    allocate(work(lwork), iwork(liwork))
+    allocate(ifail(n))
+    !call dsygvd(1,'V','L',n,c,n,Bmt,n,lam,work,lwork,iwork,liwork,info)
+    il = 1
+    iu = 7
+    M = iu-il+1
+    allocate(z(n,M))
+    abstol = 1e-4_dp
+    call dsygvx(1,'V','I','L',n,Am,n,Bm,n, &
+        0._dp, 0._dp, 1, 7, abstol, M, lam, c, n, work, &
+        lwork, iwork, ifail, info)
+    !SUBROUTINE DSYGVD( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK, &
+    !                   LWORK, IWORK, LIWORK, INFO )
+    !SUBROUTINE DSYGVX( ITYPE, JOBZ, RANGE, UPLO, N, A, LDA, B, LDB, &
+    !                   VL, VU, IL, IU, ABSTOL, M, W, Z, LDZ, WORK, &
+    !                   LWORK, IWORK, IFAIL, INFO )
     if (info /= 0) then
        print *, "dsygvd returned info =", info
        if (info < 0) then
