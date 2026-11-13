@@ -53,6 +53,7 @@ test_array = [#
   ['HarmonicDirac', 'testHarmonicDirac', 'test_harmonic_dirac.f90'],
   ['DftDiracFast', 'testDftDiracFast', 'test_dft_dirac_fast.f90'],
   ['DftSchroedFast', 'testDftSchroedFast', 'test_dft_schroed_fast.f90'],
+  ['DftSchroedCation', 'testDftSchroedCation', 'test_dft_schroed_cation.f90'],
   ['HFSchroedFast', 'testHFSchroedFast', 'test_hf_schroed.f90'],
              ]
 foreach test : test_array
