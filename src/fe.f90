@@ -1,7 +1,8 @@
 module fe
 use types, only: dp
 use constants, only: pi
-use feutils, only: get_quad_pts, phih, dphih, phih_array, dphih_array
+use feutils, only: get_quad_pts, phih, dphih, phih_array, dphih_array, &
+    sum_neumaier
 implicit none
 private
 public assemble_radial_SH, &
@@ -322,11 +323,11 @@ do e = 1, Ne
             ! A11
             hq = c**2*Bip*Bjp + ((Vq + c**2)**2 + &
                     c**2*(kappa*(kappa+1)-alpha*(alpha-1))/x**2)*Bi*Bj
-            H(i,j) = H(i,j) + sum(m*hq)
+            H(i,j) = H(i,j) + sum_neumaier(m*hq)
             ! A22
             hq = c**2*Bip*Bjp + ((Vq - c**2)**2 + &
                     c**2*(kappa*(kappa-1)-alpha*(alpha-1))/x**2)*Bi*Bj
-            H(i+Nb,j+Nb) = H(i+Nb,j+Nb) + sum(m*hq)
+            H(i+Nb,j+Nb) = H(i+Nb,j+Nb) + sum_neumaier(m*hq)
 
 
             !hq = -c*2*Vq*Bi*Bjp + c*(2*(kappa-alpha)/x*Vq)*Bi*Bj &
@@ -354,14 +355,14 @@ do e = 1, Ne
             ! A^{12}_{ij} = A^{21}_{ji}
             ! A12
             hq = c*Vq*(-Bi*Bjp + 2*kappa/x*Bi*Bj + Bip*Bj)
-            H(i,j+Nb) = H(i,j+Nb) + sum(m*hq)
+            H(i,j+Nb) = H(i,j+Nb) + sum_neumaier(m*hq)
             ! A21
             hq = c*Vq*( Bi*Bjp + 2*kappa/x*Bi*Bj - Bip*Bj)
-            H(i+Nb,j) = H(i+Nb,j) + sum(m*hq)
+            H(i+Nb,j) = H(i+Nb,j) + sum_neumaier(m*hq)
 
             ! B11
             hq = Bi*Bj
-            S(i,j) = S(i,j) + sum(m*hq)
+            S(i,j) = S(i,j) + sum_neumaier(m*hq)
             ! B22
             S(i+Nb,j+Nb) = S(i,j)
         end do
