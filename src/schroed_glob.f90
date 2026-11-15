@@ -24,13 +24,16 @@ public solve_schroed!, csolve_schroed, total_energy
 
 contains
 
-subroutine solve_schroed(Z, p, xiq, wtq, xe, eps, energies, Etot, V, DOFs)
+subroutine solve_schroed(Z, p, xiq, wtq, xe, eps, energies, Etot, V, DOFs, &
+        no_in, lo_in, fo_in)
 
 integer, intent(in) :: Z, p
 real(dp), intent(in) :: xe(:)        ! element coordinates
 real(dp), intent(in) :: xiq(:)       ! quadrature points
 real(dp), intent(in) :: wtq(:)       ! quadrature weights
 real(dp), intent(in) :: eps
+integer, intent(in), optional :: no_in(:), lo_in(:) ! (n, l) if not neutral
+real(dp), intent(in), optional :: fo_in(:)          ! occupation of (n, l)
 real(dp), allocatable, intent(out) :: energies(:)
 real(dp), intent(out) :: Etot
 real(dp), intent(out) :: V(:,:)       ! SCF potential
@@ -66,7 +69,7 @@ integer, parameter :: mixing_scheme_linear = 1, mixing_scheme_pulay = 3
 integer :: mixing_scheme
 integer, allocatable :: no(:), lo(:), focc_idx(:,:), eirange(:,:)
 real(dp), allocatable :: fo_idx(:), fo(:)
-real(dp) :: T_s, E_ee, E_en, EE_xc
+real(dp) :: T_s, E_ee, E_en, EE_xc, Nelec
 real(dp) :: xiq_lob(p+1), wtq_lob(p+1)
 
 
@@ -82,8 +85,23 @@ mixing_scheme = mixing_scheme_pulay
 call get_parent_quad_pts_wts(2, p+1, xiq_lob, wtq_lob)
 
 
-call get_atomic_states_nonrel_focc(Z, focc)
-call get_atomic_states_nonrel(Z, no, lo, fo)
+if (present(fo_in)) then
+    if (.not. (present(no_in) .and. present(lo_in))) then
+       error stop 'solve_schroed: no, lo, fo must be supplied together'
+    end if
+    if (.not. (size(no_in) == size(lo_in) .and. size(lo_in) == size(fo_in))) then
+       error stop 'solve_schroed: inconsistent occupation arrays'
+    end if
+    allocate(no(size(no_in)), lo(size(lo_in)), fo(size(fo_in)))
+    no = no_in
+    lo = lo_in
+    fo = fo_in
+    call nlf2focc(no, lo, fo, focc)
+else
+    call get_atomic_states_nonrel_focc(Z, focc)
+    call get_atomic_states_nonrel(Z, no, lo, fo)
+end if
+Nelec = sum(fo)
 allocate(fo_idx(size(fo)))
 do i = 1, size(fo_idx)
     fo_idx(i) = i
@@ -248,7 +266,7 @@ contains
     !    print *, i, no(i), lo(i), energies(i)
     !end do
 
-    Vee = hartree_potential3(real(Z, dp), pp, xe, xin_p, in_p, ib_p, xiq, wtq, phihq_p, Am_p, ipiv, -4*pi*rho)
+    Vee = hartree_potential3(Nelec, pp, xe, xin_p, in_p, ib_p, xiq, wtq, phihq_p, Am_p, ipiv, -4*pi*rho)
     call xc_vwn3(size(rho), -rho, .FALSE., c, exc, Vxc)
     call total_energy(xe, wtq, fo, energies, Vin-Z/xq, Vee, -Z/xq, exc, &
         xq, -rho, T_s, E_ee, E_en, EE_xc, Etot)

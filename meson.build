@@ -53,8 +53,13 @@ test_array = [#
   ['HarmonicDirac', 'testHarmonicDirac', 'test_harmonic_dirac.f90'],
   ['DftDiracFast', 'testDftDiracFast', 'test_dft_dirac_fast.f90'],
   ['DftSchroedFast', 'testDftSchroedFast', 'test_dft_schroed_fast.f90'],
+  ['DftSchroedCation', 'testDftSchroedCation', 'test_dft_schroed_cation.f90'],
   ['HFSchroedFast', 'testHFSchroedFast', 'test_hf_schroed.f90'],
              ]
+# meson test runs these concurrently. CI links the pthread OpenBLAS
+# (libopenblas-dev), which starts one thread per core in every process,
+# so the pools oversubscribe the runner. One thread per test.
+test_env = ['OMP_NUM_THREADS=1', 'OPENBLAS_NUM_THREADS=1']
 foreach test : test_array
   test(test.get(0),
        executable(test.get(1),
@@ -64,6 +69,7 @@ foreach test : test_array
           cpp_args : _args,
           include_directories: _incdirs,
                  ),
+       env: test_env,
       )
 endforeach
 endif

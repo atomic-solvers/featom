@@ -128,7 +128,7 @@ do e = 1, Ne
 end do
 end subroutine
 
-function hartree_potential3(Z, p, xe, xin, in, ib, xiq, wtq, phihq, Am, ipiv, f) result(uq)
+function hartree_potential3(N, p, xe, xin, in, ib, xiq, wtq, phihq, Am, ipiv, f) result(uq)
 ! Equivalently, the V(r) is the solution of the radial Poisson equation:
 !   V''(r) + (2/r)*V'(r) = -f(r)
 ! Note that in DFT, f(r) = 4*pi*n(r)
@@ -145,7 +145,7 @@ function hartree_potential3(Z, p, xe, xin, in, ib, xiq, wtq, phihq, Am, ipiv, f)
 !
 ! The V(r) is returned on the GL grid.
 !
-real(dp), intent(in) :: Z
+real(dp), intent(in) :: N ! electron count; V(rmax) = N/rmax (N = Z if neutral)
 integer, intent(in) :: p ! polynomial order to use for Y^k
 real(dp), intent(in) :: xe(:), xin(:), xiq(:), wtq(:), f(:,:), phihq(:,:), Am(:,:)
 integer, intent(in) :: in(:,:), ib(:,:), ipiv(:)
@@ -170,7 +170,10 @@ u = solve_sym2(Am, bv, ipiv)
 call c2fullc2(in, ib, u, fullc)
 ! transform solution to quadrature grid
 call fe2quad_core(xe, xin, in, fullc, phihq, uq)
-uq = uq + Z/xe(Ne+1)
+! Dirichlet solve gives V(rmax) = 0. The physical Hartree tail is N/r, so shift
+! by the electron count. The Dirac solver gets the same tail from u'(rmax) = 0
+! on u = r*V, which integrates to N without using Z.
+uq = uq + N/xe(Ne+1)
 end function
 
 

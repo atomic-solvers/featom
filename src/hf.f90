@@ -209,7 +209,7 @@ contains
         end do
         energies = eng
 
-        Vee = hartree_potential3(real(Z,dp), pp, xe, xin_p, in_p, ib_p, xiq, wtq, &
+        Vee = hartree_potential3(sum(fo), pp, xe, xin_p, in_p, ib_p, xiq, wtq, &
                                  phihq_p, Am_p, ipiv, -4.0_dp*pi*rho)
 
         call slater_exchange_potential(-rho, Vx)
