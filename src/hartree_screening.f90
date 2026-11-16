@@ -3,7 +3,7 @@ module hartree_screening
 use types, only: dp
 use feutils, only: define_connect, c2fullc2, fe2quad, get_parent_nodes, &
         phih, dphih, phih_array, dphih_array, get_quad_pts, &
-        fe2quad_core, fe2quad_gj
+        fe2quad_core, fe2quad_gj, sum_neumaier
 use solvers, only: solve_sym, solve_sym2
 implicit none
 private
@@ -248,9 +248,9 @@ do e = 1, Ne
         i = ib(al, e)
         if (i == 0) cycle              ! omit boundary basis fns for Dirichlet BCs
         if (e == 1 .and. zeta > -1) then
-            bv(i) = bv(i) + sum(bq*f_vals(:, e)*phihq1(:,al))
+            bv(i) = bv(i) + sum_neumaier(bq*f_vals(:, e)*phihq1(:,al))
         else
-            bv(i) = bv(i) + sum(bq*f_vals(:, e)*phihq(:,al))
+            bv(i) = bv(i) + sum_neumaier(bq*f_vals(:, e)*phihq(:,al))
         end if
         do be = 1, p+1
             j = ib(be, e)

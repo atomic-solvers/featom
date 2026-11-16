@@ -10,7 +10,8 @@ public get_nodes, define_connect, get_quad_pts, define_connect_n, &
     define_connect_np, get_parent_quad_pts_wts, &
     fe2quad, fe2quad_core, c2fullc, c2fullc2, fe_evaluate, calc_proj_error, &
     get_parent_nodes, phih, dphih, dphih_array, phih_array, ddphih, &
-    quad_gauss, quad_lobatto, integrate, proj_fn, integrate2, fe2quad_gj
+    quad_gauss, quad_lobatto, integrate, proj_fn, integrate2, fe2quad_gj, &
+    sum_neumaier
 
 integer, parameter :: quad_gauss = 1, quad_lobatto = 2
 
@@ -679,6 +680,30 @@ do k = 1, size(xin)
         ddphih = ddphih + term
     end do
 end do
+end function
+
+pure real(dp) function sum_neumaier(a) result(s)
+! Compensated sum (Neumaier). Dirac matrix elements and the Hartree source
+! are integrals of terms that span the rest energy and the nuclear cusp.
+! A plain SUM only resolves a few ulps of the largest addend, and its
+! reduction order is not stable across libgfortran versions. That moves
+! the uranium total energy by about 1e-8. The running correction keeps
+! the residual that a sequential add would lose.
+real(dp), intent(in) :: a(:)
+real(dp) :: c, t
+integer :: i
+s = 0
+c = 0
+do i = 1, size(a)
+    t = s + a(i)
+    if (abs(s) >= abs(a(i))) then
+        c = c + (s - t) + a(i)
+    else
+        c = c + (a(i) - t) + s
+    end if
+    s = t
+end do
+s = s + c
 end function
 
 real(dp) function integrate(xe, wtq, uq) result(r)
