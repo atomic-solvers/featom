@@ -8,6 +8,6 @@ copyright = "Copyright 2023, featom developers"
 auto-executables = true
 auto-tests = true
 auto-examples = true
-link = ["blas", "lapack"]
+link = ["openblas"]
 [install]
 library = false
