@@ -1,0 +1,203 @@
+# This file is generated automatically. DO NOT EDIT!
+
+app/conv :  \
+	app/conv.o \
+	src/constants.o \
+	src/dirac.o \
+	src/energies.o \
+	src/fe.o \
+	src/feutils.o \
+	src/gjp_gw.o \
+	src/graphs.o \
+	src/hartree_screening.o \
+	src/lapack.o \
+	src/linalg.o \
+	src/mesh.o \
+	src/mixings.o \
+	src/quadrature.o \
+	src/schroed_glob.o \
+	src/solvers.o \
+	src/states.o \
+	src/string_utils.o \
+	src/types.o \
+	src/xc.o
+
+app/conv_potential :  \
+	app/conv_potential.o \
+	src/constants.o \
+	src/dirac.o \
+	src/energies.o \
+	src/fe.o \
+	src/feutils.o \
+	src/gjp_gw.o \
+	src/graphs_potential.o \
+	src/hartree_screening.o \
+	src/lapack.o \
+	src/linalg.o \
+	src/mesh.o \
+	src/mixings.o \
+	src/quadrature.o \
+	src/schroed_dirac_solver.o \
+	src/schroed_glob.o \
+	src/solvers.o \
+	src/states.o \
+	src/string_utils.o \
+	src/types.o \
+	src/xc.o
+
+app/gpd_coulomb_schroed_nelements :  \
+	app/gpd_coulomb_schroed_nelements.o \
+	src/constants.o \
+	src/dirac.o \
+	src/energies.o \
+	src/fe.o \
+	src/feutils.o \
+	src/gjp_gw.o \
+	src/graphs_potential.o \
+	src/hartree_screening.o \
+	src/lapack.o \
+	src/linalg.o \
+	src/mesh.o \
+	src/mixings.o \
+	src/quadrature.o \
+	src/schroed_dirac_solver.o \
+	src/schroed_glob.o \
+	src/solvers.o \
+	src/states.o \
+	src/string_utils.o \
+	src/types.o \
+	src/xc.o
+
+src/main :  \
+	src/main.o
+
+src/conv.o :  \
+	src/graphs.o
+
+src/conv_potential.o :  \
+	src/graphs_potential.o
+
+src/gpd_coulomb_schroed_nelements.o :  \
+	src/graphs_potential.o
+
+src/main.o : 
+
+src/Makefile.o : 
+
+src/constants.o :  \
+	src/types.o
+
+src/dirac.o :  \
+	src/constants.o \
+	src/energies.o \
+	src/fe.o \
+	src/feutils.o \
+	src/gjp_gw.o \
+	src/hartree_screening.o \
+	src/linalg.o \
+	src/mesh.o \
+	src/mixings.o \
+	src/states.o \
+	src/types.o \
+	src/xc.o
+
+src/energies.o :  \
+	src/constants.o \
+	src/types.o
+
+src/fe.o :  \
+	src/constants.o \
+	src/feutils.o \
+	src/types.o
+
+src/feutils.o :  \
+	src/quadrature.o \
+	src/solvers.o \
+	src/types.o
+
+src/gjp_gw.o :  \
+	src/lapack.o \
+	src/types.o
+
+src/graphs.o :  \
+	src/dirac.o \
+	src/feutils.o \
+	src/mesh.o \
+	src/schroed_glob.o \
+	src/string_utils.o \
+	src/types.o
+
+src/graphs_potential.o :  \
+	src/dirac.o \
+	src/fe.o \
+	src/feutils.o \
+	src/linalg.o \
+	src/mesh.o \
+	src/schroed_dirac_solver.o \
+	src/schroed_glob.o \
+	src/string_utils.o \
+	src/types.o
+
+src/hartree_screening.o :  \
+	src/feutils.o \
+	src/solvers.o \
+	src/types.o
+
+src/lapack.o : 
+
+src/linalg.o :  \
+	src/lapack.o \
+	src/types.o
+
+src/mesh.o :  \
+	src/types.o
+
+src/mixings.o :  \
+	src/linalg.o \
+	src/types.o
+
+src/quadrature.o :  \
+	src/types.o
+
+src/schroed_dirac_solver.o :  \
+	src/constants.o \
+	src/dirac.o \
+	src/fe.o \
+	src/feutils.o \
+	src/gjp_gw.o \
+	src/linalg.o \
+	src/mesh.o \
+	src/schroed_glob.o \
+	src/string_utils.o \
+	src/types.o
+
+src/schroed_glob.o :  \
+	src/constants.o \
+	src/energies.o \
+	src/fe.o \
+	src/feutils.o \
+	src/hartree_screening.o \
+	src/lapack.o \
+	src/linalg.o \
+	src/mesh.o \
+	src/mixings.o \
+	src/solvers.o \
+	src/states.o \
+	src/types.o \
+	src/xc.o
+
+src/solvers.o :  \
+	src/lapack.o \
+	src/types.o
+
+src/states.o :  \
+	src/types.o
+
+src/string_utils.o :  \
+	src/types.o
+
+src/types.o : 
+
+src/xc.o :  \
+	src/constants.o \
+	src/types.o
