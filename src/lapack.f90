@@ -77,10 +77,65 @@ interface
     REAL(dp)           A( LDA, * ), B( LDB, * ), W( * ), WORK( * )
     END SUBROUTINE
 
+    SUBROUTINE DSYGVX( ITYPE, JOBZ, RANGE, UPLO, N, A, LDA, B, LDB, &
+                       VL, VU, IL, IU, ABSTOL, M, W, Z, LDZ, WORK, &
+                       LWORK, IWORK, IFAIL, INFO )
+    import :: dp
+    CHARACTER          JOBZ, RANGE, UPLO
+    INTEGER            IL, INFO, ITYPE, IU, LDA, LDB, LDZ, LWORK, M, N
+    REAL(dp)           ABSTOL, VL, VU
+    INTEGER            IFAIL( * ), IWORK( * )
+    REAL(dp)           A( LDA, * ), B( LDB, * ), W( * ), WORK( * ), &
+                       Z( LDZ, * )
+    END SUBROUTINE
+
+    SUBROUTINE DPOTRF( UPLO, N, A, LDA, INFO )
+    import :: dp
+    CHARACTER          UPLO
+    INTEGER            INFO, LDA, N
+    REAL(dp)           A( LDA, * )
+    END SUBROUTINE
+
+    SUBROUTINE DTRSM( SIDE, UPLO, TRANSA, DIAG, M, N, ALPHA, A, LDA, B, &
+                      LDB )
+    import :: dp
+    CHARACTER          DIAG, SIDE, TRANSA, UPLO
+    INTEGER            LDA, LDB, M, N
+    REAL(dp)           ALPHA, A( LDA, * ), B( LDB, * )
+    END SUBROUTINE
+
     REAL(dp) FUNCTION DLAMCH( CMACH )
     import :: dp
     CHARACTER          CMACH
     END FUNCTION
+
+    INTEGER FUNCTION ILAENV( ISPEC, NAME, OPTS, N1, N2, N3, N4 )    
+    CHARACTER*( * )    NAME, OPTS                 
+    INTEGER            ISPEC, N1, N2, N3, N4               
+    END FUNCTION                        
+
+    SUBROUTINE DGETRF( M, N, A, LDA, IPIV, INFO )                   
+    import :: dp                                  
+    INTEGER            INFO, LDA, M, N                     
+    INTEGER            IPIV( * )        
+    REAL(dp)           A( LDA, * )                                    
+    END SUBROUTINE                               
+
+    SUBROUTINE DGETRI( N, A, LDA, IPIV, WORK, LWORK, INFO )          
+    import :: dp                  
+    INTEGER            INFO, LDA, LWORK, N                            
+    INTEGER            IPIV( * )                                        
+    REAL(dp)           A( LDA, * ), WORK( * )         
+    END SUBROUTINE                                                  
+
+    SUBROUTINE DSYGST( ITYPE, UPLO, N, A, LDA, B, LDB, INFO )
+    import :: dp
+    CHARACTER          UPLO
+    INTEGER            INFO, ITYPE, LDA, LDB, N
+    REAL(dp)           A( LDA, * ), B( LDB, * )
+    END SUBROUTINE
+
+
 end interface
 
 contains
