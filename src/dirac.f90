@@ -37,7 +37,7 @@ real(dp), intent(inout) :: D(:,:), S(:,:), H(:,:), lam(:), lam_tmp(:), eng(:)
 real(dp), intent(out) :: V(:,:)
 integer, intent(out) :: idx
 real(dp), intent(in) :: E_dirac_shift
-integer :: kappa, i
+integer :: kappa, i, nlam
 idx = 0
 do kappa = Lmin, Lmax
     if (kappa == 0) cycle
@@ -61,25 +61,27 @@ do kappa = Lmin, Lmax
 
     if (accurate_eigensolver) then
         call eigh(H, S, lam)
-        call eigh(H, S, lam_tmp, D)
+        call eigh(H, S, lam_tmp, D, 7)
     else
-        call eigh(H, S, lam, D)
+        nlam = count(focc(:,kappa) > tiny(1._dp))
+        call eigh(H, S, lam, D, nlam)
     end if
 
     do i = 1, size(focc,1)
         if (focc(i,kappa) < tiny(1._dp)) cycle
+        !print *, "i=", i
 
-        call c2fullc2(in, ib, D(:Nb,i), fullc)
-        call fe2quad(xe, xin, xiq, in, fullc, uq)
-        rho0 = rho0 - focc(i,kappa)*uq**2 * xq**alpha_j(kappa)
-        call fe2quad(xe, xin, xiq_gj(:,-1), in, fullc, uq)
-        rho1(:,1) = rho1(:,1) - focc(i,kappa)*uq(:,1)**2 * xq2(:,1)**alpha_j(kappa)
-
-        call c2fullc2(in, ib, D(Nb+1:,i), fullc)
-        call fe2quad(xe, xin, xiq, in, fullc, uq)
-        rho0 = rho0 - focc(i,kappa)*uq**2 * xq**alpha_j(kappa)
-        call fe2quad(xe, xin, xiq_gj(:,-1), in, fullc, uq)
-        rho1(:,1) = rho1(:,1) - focc(i,kappa)*uq(:,1)**2 * xq2(:,1)**alpha_j(kappa)
+        !call c2fullc2(in, ib, D(:Nb,i), fullc)
+        !call fe2quad(xe, xin, xiq, in, fullc, uq)
+        !rho0 = rho0 - focc(i,kappa)*uq**2 * xq**alpha_j(kappa)
+        !call fe2quad(xe, xin, xiq_gj(:,-1), in, fullc, uq)
+        !rho1(:,1) = rho1(:,1) - focc(i,kappa)*uq(:,1)**2 * xq2(:,1)**alpha_j(kappa)
+!
+!        call c2fullc2(in, ib, D(Nb+1:,i), fullc)
+!        call fe2quad(xe, xin, xiq, in, fullc, uq)
+!        rho0 = rho0 - focc(i,kappa)*uq**2 * xq**alpha_j(kappa)
+!        call fe2quad(xe, xin, xiq_gj(:,-1), in, fullc, uq)
+!        rho1(:,1) = rho1(:,1) - focc(i,kappa)*uq(:,1)**2 * xq2(:,1)**alpha_j(kappa)
 
         idx = idx + 1
         eng(focc_idx(i,kappa)) = sqrt(lam(i)) - c**2 + E_dirac_shift
@@ -199,6 +201,7 @@ allocate(D(n, n), lam(n), lam_tmp(n), fullc(Nn), uq(Nq,Ne), rho(Nq,Ne), Vee(Nq,N
     rho0(Nq,Ne), rho1(Nq,Ne))
 
 nband = count(focc > 0)
+!print *, "nband=", nband
 scf_max_iter = 100
 scf_alpha = 0.4_dp
 scf_L2_eps = 1e-4_dp
